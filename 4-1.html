@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智能选课系统 - 学生面板</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#165DFF',
+            secondary: '#36D399',
+            warning: '#FFAB00',
+            danger: '#F87272',
+            dark: '#1E293B',
+            light: '#F8FAFC'
+          },
+          fontFamily: {
+            inter: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+          .content-auto {
+            content-visibility: auto;
+          }
+          .card-shadow {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+          }
+          .hover-scale {
+            transition: transform 0.2s ease-in-out;
+          }
+          .hover-scale:hover {
+            transform: scale(1.02);
+          }
+        }
+      </style>
+</head>
+
+<body class="font-inter bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+  <!-- 顶部导航 -->
+  <header class="bg-primary text-white shadow-md">
+    <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center">
+        <i class="fa fa-user text-2xl mr-2"></i>
+        <h1 class="text-xl font-bold">学生面板</h1>
+      </div>
+      <div class="flex items-center">
+        <span id="student-name" class="mr-4">学生: 赵同学</span>
+        <button id="student-logout-btn" class="flex items-center text-white hover:text-gray-200 transition-colors">
+          <i class="fa fa-sign-out mr-1"></i> 退出
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主内容区 -->
+  <div class="flex-1 flex">
+    <!-- 侧边栏 -->
+    <aside class="w-64 bg-dark text-white shadow-lg">
+      <nav class="py-4">
+        <div class="px-4 mb-6">
+          <h2 class="text-lg font-semibold text-gray-400 uppercase tracking-wider">课程管理</h2>
+        </div>
+        <ul class="space-y-1">
+          <li>
+            <a href="#"
+              class="nav-link text-gray-300 flex items-center px-4 py-3 hover:bg-primary/20 hover:text-white transition-colors">
+              <i class="fa fa-tachometer w-6 text-center"></i>
+              <span class="ml-2">我的课程</span>
+            </a>
+          </li>
+          <li>
+            <a href="#"
+              class="nav-link bg-primary/20 text-white flex items-center px-4 py-3 hover:bg-primary/30 transition-colors">
+              <i class="fa fa-search w-6 text-center"></i>
+              <span class="ml-2">选课中心</span>
+            </a>
+          </li>
+          <li>
+            <a href="#"
+              class="nav-link text-gray-300 flex items-center px-4 py-3 hover:bg-primary/20 hover:text-white transition-colors">
+              <i class="fa fa-graduation-cap w-6 text-center"></i>
+              <span class="ml-2">成绩查询</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- 主面板 -->
+    <main class="flex-1 p-6 overflow-auto">
+      <div class="container mx-auto">
+        <!-- 页面标题 -->
+        <div class="mb-8">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h2 class="text-2xl font-bold text-gray-800 mb-2">选课中心</h2>
+              <p class="text-gray-600">浏览并选择你感兴趣的课程</p>
+            </div>
+            <div>
+              <div class="flex items-center space-x-4">
+                <button
+                  class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center"
+                  id="view-schedule-btn">
+                  <i class="fa fa-calendar mr-2"></i> 查看课表
+                </button>
+                <button
+                  class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors flex items-center"
+                  id="refresh-courses-btn">
+                  <i class="fa fa-refresh mr-2"></i> 刷新课程
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 筛选条件 -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8 border border-gray-200">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div>
+              <label for="course-semester-select" class="block text-sm font-medium text-gray-700 mb-1">选择学期</label>
+              <select id="course-semester-select"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                <option value="2025-2026-1">2025-2026学年第一学期</option>
+                <option value="2025-2026-2">2025-2026学年第二学期</option>
+                <option value="2026-2027-1">2026-2027学年第一学期</option>
+                <option value="2026-2027-2">2026-2027学年第二学期</option>
+              </select>
+            </div>
+            <div>
+              <label for="course-type-select" class="block text-sm font-medium text-gray-700 mb-1">课程类型</label>
+              <select id="course-type-select"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                <option value="all">全部课程</option>
+                <option value="required">必修课程</option>
+                <option value="elective">选修课程</option>
+                <option value="public">公共课程</option>
+              </select>
+            </div>
+            <div>
+              <label for="course-category-select" class="block text-sm font-medium text-gray-700 mb-1">课程分类</label>
+              <select id="course-category-select"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                <option value="all">全部分类</option>
+                <option value="computer">计算机科学</option>
+                <option value="math">数学</option>
+                <option value="physics">物理学</option>
+                <option value="chemistry">化学</option>
+                <option value="biology">生物学</option>
+                <option value="english">英语</option>
+                <option value="chinese">中文</option>
+                <option value="art">艺术</option>
+                <option value="music">音乐</option>
+              </select>
+            </div>
+            <div>
+              <label for="course-search" class="block text-sm font-medium text-gray-700 mb-1">搜索课程</label>
+              <div class="relative">
+                <input type="text" id="course-search" placeholder="输入课程名称或教师"
+                  class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                <i class="fa fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-6 flex flex-wrap gap-2">
+            <span class="chip bg-gray-100 text-gray-700">
+              <span class="font-medium">筛选:</span> 未选课程
+            </span>
+            <span class="chip bg-gray-100 text-gray-700">
+              <span class="font-medium">学分:</span> 1-6分
+            </span>
+            <span class="chip bg-gray-100 text-gray-700">
+              <span class="font-medium">时间:</span> 周一至周五
+            </span>
+            <button class="chip bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+              <i class="fa fa-sliders mr-1"></i> 更多筛选
+            </button>
+            <button class="chip bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors ml-auto">
+              <i class="fa fa-times mr-1"></i> 清除全部
+            </button>
+          </div>
+        </div>
+
+        <!-- 选课统计 -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200 hover-scale">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-medium text-gray-500 mb-1">已选课程</p>
+                <h3 class="text-3xl font-bold text-gray-900">5</h3>
+              </div>
+              <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                <i class="fa fa-book text-primary text-xl"></i>
+              </div>
+            </div>
+            <div class="mt-4">
+              <div class="w-full bg-gray-200 rounded-full h-2">
+                <div class="bg-primary h-2 rounded-full" style="width: 50%"></div>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">已完成本学期选课目标的 50%</p>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200 hover-scale">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-medium text-gray-500 mb-1">总学分</p>
+                <h3 class="text-3xl font-bold text-gray-900">15</h3>
+              </div>
+              <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                <i class="fa fa-graduation-cap text-secondary text-xl"></i>
+              </div>
+            </div>
+            <div class="mt-4">
+              <div class="w-full bg-gray-200 rounded-full h-2">
+                <div class="bg-secondary h-2 rounded-full" style="width: 60%"></div>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">已获得本学期目标学分的 60%</p>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200 hover-scale">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-medium text-gray-500 mb-1">可选课程</p>
+                <h3 class="text-3xl font-bold text-gray-900">24</h3>
+              </div>
+              <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                <i class="fa fa-list-alt text-purple-600 text-xl"></i>
+              </div>
+            </div>
+            <div class="mt-4">
+              <div class="flex justify-between text-sm text-gray-500">
+                <span>必修: 3</span>
+                <span>选修: 21</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200 hover-scale">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-medium text-gray-500 mb-1">选课截止</p>
+                <h3 class="text-3xl font-bold text-gray-900">12</h3>
+                <p class="text-sm text-gray-500">天后</p>
+              </div>
+              <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                <i class="fa fa-clock-o text-warning text-xl"></i>
+              </div>
+            </div>
+            <div class="mt-4">
+              <div class="w-full bg-gray-200 rounded-full h-2">
+                <div class="bg-warning h-2 rounded-full" style="width: 75%"></div>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">选课时间还剩 75%</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 课程列表和已选课程 -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <!-- 课程列表 -->
+          <div class="lg:col-span-2">
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="text-xl font-bold text-gray-800">可选课程</h3>
+              <div class="flex items-center space-x-2">
+                <span class="text-sm text-gray-500">排序:</span>
+                <select
+                  class="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                  <option value="recommended">推荐课程</option>
+                  <option value="name">课程名称</option>
+                  <option value="credit">学分</option>
+                  <option value="time">上课时间</option>
+                  <option value="teacher">授课教师</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- 课程卡片1 -->
+              <div class="course-card hover-scale">
+                <div class="relative">
+                  <img src="https://picsum.photos/600/300?random=10" alt="数据结构课程封面" class="w-full h-40 object-cover">
+                  <div class="absolute top-3 right-3">
+                    <span class="chip bg-primary text-white">必修</span>
+                  </div>
+                </div>
+                <div class="p-5">
+                  <div class="flex justify-between items-start mb-3">
+                    <h4 class="text-lg font-semibold text-gray-900">数据结构</h4>
+                    <div class="flex items-center">
+                      <i class="fa fa-star text-yellow-400 mr-1"></i>
+                      <span class="text-sm font-medium">4.8</span>
+                    </div>
+                  </div>
+                  <p class="text-sm text-gray-600 mb-4">本课程系统地介绍了常用的数据结构及其应用，包括线性表、栈、队列、树、图等，以及相关的算法设计与分析方法。</p>
+                  <div class="flex flex-wrap gap-2 mb-4">
+                    <span class="chip bg-gray-100 text-gray-700">计算机科学</span>
+                    <span class="chip bg-gray-100 text-gray-700">3学分</span>
+                    <span class="chip bg-gray-100 text-gray-700">周一/周三 1-2节</span>
+                  </div>
+                  <div class="flex justify-between items-center">
+                    <div class="flex items-center">
+                      <img src="https://picsum.photos/100/100?random=1" alt="王教授" class="w-8 h-8 rounded-full mr-2">
+                      <span class="text-sm font-medium">王教授</span>
+                    </div>
+                    <button class="btn-primary flex items-center" onclick="selectCourse(this)">
+                      <i class="fa fa-plus mr-1"></i> 选课
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 课程卡片2 -->
+              <div class="course-card hover-scale">
+                <div class="relative">
+                  <img src="https://picsum.photos/600/300?random=11" alt="人工智能基础课程封面" class="w-full h-40 object-cover">
+                  <div class="absolute top-3 right-3">
+                    <span class="chip bg-secondary text-white">选修</span>
+                  </div>
+                </div>
+                <div class="p-5">
+                  <div class="flex justify-between items-start mb-3">
+                    <h4 class="text-lg font-semibold text-gray-900">人工智能基础</h4>
+                    <div class="flex items-center">
+                      <i class="fa fa-star text-yellow-400 mr-1"></i>
+                      <span class="text-sm font-medium">4.9</span>
+                    </div>
+                  </div>
+                  <p class="text-sm text-gray-600 mb-4">本课程介绍人工智能的基本概念、方法和技术，包括搜索算法、机器学习、自然语言处理、知识表示与推理等内容。</p>
+                  <div class="flex flex-wrap gap-2 mb-4">
+                    <span class="chip bg-gray-100 text-gray-700">计算机科学</span>
+                    <span class="chip bg-gray-100 text-gray-700">4学分</span>
+                    <span class="chip bg-gray-100 text-gray-700">周二/周四 3-4节</span>
+                  </div>
+                  <div class="flex justify-between items-center">
+                    <div class="flex items-center">
+                      <img src="https://picsum.photos/100/100?random=2" alt="李教授" class="w-8 h-8 rounded-full mr-2">
+                      <span class="text-sm font-medium">李教授</span>
+                    </div>
+                    <button class="btn-primary flex items-center" onclick="selectCourse(this)">
+                      <i class="fa fa-plus mr-1"></i> 选课
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 课程卡片3 -->
+              <div class="course-card hover-scale">
+                <div class="relative">
+                  <img src="https://picsum.photos/600/300?random=12" alt="高等数学课程封面" class="w-full h-40 object-cover">
+                  <div class="absolute top-3 right-3">
+                    <span class="chip bg-primary text-white">必修</span>
+                  </div>
+                </div>
+                <div class="p-5">
+                  <div class="flex justify-between items-start mb-3">
+                    <h4 class="text-lg font-semibold text-gray-900">高等数学</h4>
+                    <div class="flex items-center">
+                      <i class="fa fa-star text-yellow-400 mr-1"></i>
+                      <span class="text-sm font-medium">4.5</span>
+                    </div>
+                  </div>
+                  <p class="text-sm text-gray-600 mb-4">本课程系统介绍微积分学的基本理论和方法，包括函数、极限、导数、积分、微分方程等内容及其在科学与工程中的应用。</p>
+                  <div class="flex flex-wrap gap-2 mb-4">
+                    <span class="chip bg-gray-100 text-gray-700">数学</span>
+                    <span class="chip bg-gray-100 text-gray-700">4学分</span>
+                    <span class="chip bg-gray-100 text-gray-700">周一/周三/周五 5-6节</span>
+                  </div>
+                  <div class="flex justify-between items-center">
+                    <div class="flex items-center">
+                      <img src="https://picsum.photos/100/100?random=3" alt="张教授" class="w-8 h-8 rounded-full mr-2">
+                      <span class="text-sm font-medium">张教授</span>
+                    </div>
+                    <button class="btn-primary flex items-center" onclick="selectCourse(this)">
+                      <i class="fa fa-plus mr-1"></i> 选课
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 课程卡片4 -->
+              <div class="course-card hover-scale">
+                <div class="relative">
+                  <img src="https://picsum.photos/600/300?random=13" alt="大学物理课程封面" class="w-full h-40 object-cover">
+                  <div class="absolute top-3 right-3">
+                    <span class="chip bg-secondary text-white">选修</span>
+                  </div>
+                </div>
+                <div class="p-5">
+                  <div class="flex justify-between items-start mb-3">
+                    <h4 class="text-lg font-semibold text-gray-900">大学物理</h4>
+                    <div class="flex items-center">
+                      <i class="fa fa-star text-yellow-400 mr-1"></i>
+                      <span class="text-sm font-medium">4.7</span>
+                    </div>
+                  </div>
+                  <p class="text-sm text-gray-600 mb-4">本课程系统介绍经典物理学的基本理论和方法，包括力学、热学、电磁学、光学等内容，及其在现代科学技术中的应用。</p>
+                  <div class="flex flex-wrap gap-2 mb-4">
+                    <span class="chip bg-gray-100 text-gray-700">物理学</span>
+                    <span class="chip bg-gray-100 text-gray-700">3学分</span>
+                    <span class="chip bg-gray-100 text-gray-700">周二/周四 7-8节</span>
+                  </div>
+                  <div class="flex justify-between items-center">
+                    <div class="flex items-center">
+                      <img src="https://picsum.photos/100/100?random=4" alt="赵教授" class="w-8 h-8 rounded-full mr-2">
+                      <span class="text-sm font-medium">赵教授</span>
+                    </div>
+                    <button class="btn-primary flex items-center" onclick="selectCourse(this)">
+                      <i class="fa fa-plus mr-1"></i> 选课
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 加载更多 -->
+            <div class="mt-8 text-center">
+              <button
+                class="px-6 py-3 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors flex items-center mx-auto">
+                <i class="fa fa-refresh mr-2"></i> 加载更多课程
+              </button>
+            </div>
+          </div>
+
+          <!-- 已选课程 -->
+          <div>
+            <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-200">
+              <div class="p-5 border-b border-gray-200">
+                <div class="flex justify-between items-center">
+                  <h3 class="text-lg font-semibold text-gray-900">已选课程</h3>
+                  <span class="px-2 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium">5门课程</span>
+                </div>
+              </div>
+
+              <div class="divide-y divide-gray-200" id="selected-courses">
+                <!-- 已选课程1 -->
+                <div class="p-4 hover:bg-gray-50 transition-colors">
+                  <div class="flex items-start">
+                    <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <i class="fa fa-book text-primary"></i>
+                    </div>
+                    <div class="ml-3 flex-1">
+                      <div class="flex justify-between items-start">
+                        <h4 class="text-sm font-medium text-gray-900">计算机网络</h4>
+                        <button class="text-gray-400 hover:text-danger" onclick="dropCourse(this)">
+                          <i class="fa fa-times"></i>
+                        </button>
+                      </div>
+                      <p class="text-xs text-gray-500 mt-1">3学分 | 周三/周五 3-4节 | 刘教授</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 已选课程2 -->
+                <div class="p-4 hover:bg-gray-50 transition-colors">
+                  <div class="flex items-start">
+                    <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <i class="fa fa-code text-primary"></i>
+                    </div>
+                    <div class="ml-3 flex-1">
+                      <div class="flex justify-between items-start">
+                        <h4 class="text-sm font-medium text-gray-900">程序设计基础</h4>
+                        <button class="text-gray-400 hover:text-danger" onclick="dropCourse(this)">
+                          <i class="fa fa-times"></i>
+                        </button>
+                      </div>
+                      <p class="text-xs text-gray-500 mt-1">4学分 | 周一/周三 5-6节 | 陈教授</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 已选课程3 -->
+                <div class="p-4 hover:bg-gray-50 transition-colors">
+                  <div class="flex items-start">
+                    <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <i class="fa fa-database text-primary"></i>
+                    </div>
+                    <div class="ml-3 flex-1">
+                      <div class="flex justify-between items-start">
+                        <h4 class="text-sm font-medium text-gray-900">数据库系统</h4>
+                        <button class="text-gray-400 hover:text-danger" onclick="dropCourse(this)">
+                          <i class="fa fa-times"></i>
+                        </button>
+                      </div>
+                      <p class="text-xs text-gray-500 mt-1">3学分 | 周二/周四 1-2节 | 王教授</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 已选课程4 -->
+                <div class="p-4 hover:bg-gray-50 transition-colors">
+                  <div class="flex items-start">
+                    <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <i class="fa fa-cogs text-primary"></i>
+                    </div>
+                    <div class="ml-3 flex-1">
+                      <div class="flex justify-between items-start">
+                        <h4 class="text-sm font-medium text-gray-900">操作系统</h4>
+                        <button class="text-gray-400 hover:text-danger" onclick="dropCourse(this)">
+                          <i class="fa fa-times"></i>
+                        </button>
+                      </div>
+                      <p class="text-xs text-gray-500 mt-1">4学分 | 周一/周五 7-8节 | 孙教授</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 已选课程5 -->
+                <div class="p-4 hover:bg-gray-50 transition-colors">
+                  <div class="flex items-start">
+                    <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <i class="fa fa-language text-primary"></i>
+                    </div>
+                    <div class="ml-3 flex-1">
+                      <div class="flex justify-between items-start">
+                        <h4 class="text-sm font-medium text-gray-900">专业英语</h4>
+                        <button class="text-gray-400 hover:text-danger" onclick="dropCourse(this)">
+                          <i class="fa fa-times"></i>
+                        </button>
+                      </div>
+                      <p class="text-xs text-gray-500 mt-1">2学分 | 周二/周四 9-10节 | 李教授</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="p-5 border-t border-gray-200">
+                <div class="flex justify-between items-center mb-4">
+                  <span class="text-sm font-medium text-gray-900">总学分</span>
+                  <span class="text-lg font-bold text-primary">16</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
+                  <div class="bg-primary h-2 rounded-full" style="width: 64%"></div>
+                </div>
+                <p class="text-xs text-gray-500">已选学分: 16/25 (64%)</p>
+                <button
+                  class="w-full mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center"
+                  id="confirm-selection-btn">
+                  <i class="fa fa-check mr-2"></i> 确认选课
+                </button>
+              </div>
+            </div>
+
+            <!-- 选课指南 -->
+            <div class="mt-6 bg-white rounded-xl shadow-md p-5 border border-gray-200">
+              <h3 class="text-lg font-semibold text-gray-900 mb-3">选课指南</h3>
+              <ul class="space-y-3 text-sm text-gray-600">
+                <li class="flex items-start">
+                  <i class="fa fa-info-circle text-primary mt-1 mr-2"></i>
+                  <span>本学期最低毕业学分为25分，已选16分，还需选择至少9分</span>
+                </li>
+                <li class="flex items-start">
+                  <i class="fa fa-clock-o text-primary mt-1 mr-2"></i>
+                  <span>选课截止日期：2025年6月15日</span>
+                </li>
+                <li class="flex items-start">
+                  <i class="fa fa-exclamation-triangle text-warning mt-1 mr-2"></i>
+                  <span>请确保所选课程时间不冲突，可点击"查看课表"进行检查</span>
+                </li>
+                <li class="flex items-start">
+                  <i class="fa fa-book text-primary mt-1 mr-2"></i>
+                  <span>必修课必须全部选择，选修课可根据兴趣和专业方向选择</span>
+                </li>
+              </ul>
+              <button
+                class="w-full mt-4 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center">
+                <i class="fa fa-file-text-o mr-2"></i> 查看完整选课手册
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // 退出登录
+    document.getElementById('student-logout-btn').addEventListener('click', function () {
+      if (confirm('确定要退出登录吗？')) {
+        window.location.href = 'login.html';
+      }
+    });
+
+    // 课程筛选和搜索
+    document.getElementById('course-search').addEventListener('input', function () {
+      // 模拟搜索功能
+      const searchTerm = this.value.toLowerCase();
+      console.log(`搜索课程: ${searchTerm}`);
+      // 实际应用中这里会有筛选课程的逻辑
+    });
+
+    // 学期和类型筛选
+    document.getElementById('course-semester-select').addEventListener('change', function () {
+      const selectedSemester = this.value;
+      console.log(`筛选学期: ${selectedSemester}`);
+      // 实际应用中这里会有筛选课程的逻辑
+    });
+
+    document.getElementById('course-type-select').addEventListener('change', function () {
+      const selectedType = this.value;
+      console.log(`筛选课程类型: ${selectedType}`);
+      // 实际应用中这里会有筛选课程的逻辑
+    });
+
+    document.getElementById('course-category-select').addEventListener('change', function () {
+      const selectedCategory = this.value;
+      console.log(`筛选课程分类: ${selectedCategory}`);
+      // 实际应用中这里会有筛选课程的逻辑
+    });
+
+    // 选课功能
+    function selectCourse(button) {
+      const courseCard = button.closest('.course-card');
+      const courseName = courseCard.querySelector('h4').textContent;
+      const courseInfo = courseCard.querySelectorAll('.chip');
+      const credit = courseInfo[1].textContent;
+      const time = courseInfo[2].textContent;
+      const teacher = courseCard.querySelector('.flex.items-center span').textContent;
+
+      // 创建已选课程项
+      const selectedCourses = document.getElementById('selected-courses');
+      const courseItem = document.createElement('div');
+      courseItem.className = 'p-4 hover:bg-gray-50 transition-colors';
+      courseItem.innerHTML = `
+        <div class="flex items-start">
+          <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+            <i class="fa fa-book text-primary"></i>
+          </div>
+          <div class="ml-3 flex-1">
+            <div class="flex justify-between items-start">
+              <h4 class="text-sm font-medium text-gray-900">${courseName}</h4>
+              <button class="text-gray-400 hover:text-danger" onclick="dropCourse(this)">
+                <i class="fa fa-times"></i>
+              </button>
+            </div>
+            <p class="text-xs text-gray-500 mt-1">${credit} | ${time} | ${teacher}</p>
+          </div>
+        </div>
+      `;
+
+      // 添加到已选课程列表
+      selectedCourses.appendChild(courseItem);
+
+      // 更新已选课程计数
+      updateSelectedCourseCount();
+
+      // 禁用选课按钮并改变样式
+      button.disabled = true;
+      button.className = 'px-4 py-2 bg-gray-200 text-gray-500 rounded-lg cursor-not-allowed flex items-center';
+      button.innerHTML = '<i class="fa fa-check mr-1"></i> 已选';
+
+      // 显示成功提示
+      showNotification(`已成功选择课程: ${courseName}`);
+    }
+
+    // 退课功能
+    function dropCourse(button) {
+      const courseItem = button.closest('div');
+      const courseName = courseItem.querySelector('h4').textContent;
+
+      // 从已选课程列表移除
+      courseItem.style.opacity = '0';
+      courseItem.style.transition = 'opacity 0.3s';
+
+      setTimeout(() => {
+        courseItem.remove();
+
+        // 更新已选课程计数
+        updateSelectedCourseCount();
+
+        // 查找对应的课程卡片并恢复选课按钮
+        const courseCards = document.querySelectorAll('.course-card');
+        courseCards.forEach(card => {
+          if (card.querySelector('h4').textContent === courseName) {
+            const selectButton = card.querySelector('button');
+            selectButton.disabled = false;
+            selectButton.className = 'btn-primary flex items-center';
+            selectButton.innerHTML = '<i class="fa fa-plus mr-1"></i> 选课';
+          }
+        });
+
+        // 显示成功提示
+        showNotification(`已成功退选课程: ${courseName}`);
+      }, 300);
+    }
+
+    // 更新已选课程计数
+    function updateSelectedCourseCount() {
+      const count = document.getElementById('selected-courses').children.length;
+      const countElement = document.querySelector('.bg-primary\\/10.text-primary.rounded-full.text-xs.font-medium');
+      countElement.textContent = `${count}门课程`;
+
+      // 更新学分统计
+      updateCreditStats();
+    }
+
+    // 更新学分统计
+    function updateCreditStats() {
+      const courseItems = document.getElementById('selected-courses').children;
+      let totalCredits = 0;
+
+      for (let i = 0; i < courseItems.length; i++) {
+        const creditText = courseItems[i].querySelector('p').textContent.split(' | ')[0];
+        const credit = parseInt(creditText);
+        if (!isNaN(credit)) {
+          totalCredits += credit;
+        }
+      }
+
+      // 更新学分显示
+      document.querySelector('.text-lg.font-bold.text-primary').textContent = totalCredits;
+
+      // 更新进度条
+      const progressBar = document.querySelector('.bg-primary.h-2.rounded-full');
+      const percentage = (totalCredits / 25) * 100;
+      progressBar.style.width = `${percentage}%`;
+
+      // 更新文字显示
+      document.querySelector('.text-xs.text-gray-500').textContent = `已选学分: ${totalCredits}/25 (${percentage.toFixed(0)}%)`;
+    }
+
+    // 显示通知
+    function showNotification(message) {
+      const notification = document.createElement('div');
+      notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg z-50';
+      notification.textContent = message;
+      document.body.appendChild(notification);
+
+      // 3秒后自动消失
+      setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transition = 'opacity 0.5s';
+        setTimeout(() => {
+          document.body.removeChild(notification);
+        }, 500);
+      }, 3000);
+    }
+
+    // 查看课表
+    document.getElementById('view-schedule-btn').addEventListener('click', function () {
+      alert('查看课程表功能将在未来版本中实现');
+    });
+
+    // 刷新课程
+    document.getElementById('refresh-courses-btn').addEventListener('click', function () {
+      // 显示加载中
+      this.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i> 刷新中...';
+      this.disabled = true;
+
+      // 模拟刷新
+      setTimeout(() => {
+        this.innerHTML = '<i class="fa fa-refresh mr-2"></i> 刷新课程';
+        this.disabled = false;
+        showNotification('课程列表已刷新');
+      }, 1000);
+    });
+
+    // 确认选课
+    document.getElementById('confirm-selection-btn').addEventListener('click', function () {
+      const courseItems = document.getElementById('selected-courses').children;
+
+      if (courseItems.length === 0) {
+        alert('请先选择至少一门课程');
+        return;
+      }
+
+      // 检查学分是否满足最低要求
+      const totalCredits = parseInt(document.querySelector('.text-lg.font-bold.text-primary').textContent);
+      if (totalCredits < 25) {
+        if (!confirm(`你当前选择的学分为 ${totalCredits}，不足最低要求的25分，是否继续确认选课？`)) {
+          return;
+        }
+      }
+
+      // 模拟提交选课
+      this.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i> 提交中...';
+      this.disabled = true;
+
+      setTimeout(() => {
+        showNotification('选课提交成功！系统将在24小时内确认你的选课');
+
+        // 重置按钮
+        this.innerHTML = '<i class="fa fa-check mr-2"></i> 确认选课';
+        this.disabled = false;
+
+        // 禁用所有选课按钮
+        document.querySelectorAll('.course-card button').forEach(button => {
+          if (!button.disabled) {
+            button.disabled = true;
+            button.className = 'px-4 py-2 bg-gray-200 text-gray-500 rounded-lg cursor-not-allowed flex items-center';
+            button.innerHTML = '<i class="fa fa-lock mr-1"></i> 已截止';
+          }
+        });
+
+        // 禁用所有退课按钮
+        document.querySelectorAll('#selected-courses button').forEach(button => {
+          button.disabled = true;
+          button.className = 'text-gray-300 cursor-not-allowed';
+        });
+
+        // 禁用确认按钮
+        this.disabled = true;
+        this.className = 'w-full mt-4 px-4 py-2 bg-gray-300 text-gray-500 rounded-lg cursor-not-allowed flex items-center justify-center';
+      }, 1500);
+    });
+  </script>
+</body>
+
+</html>

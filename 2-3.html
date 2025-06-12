@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智能选课系统 - 管理员面板</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#165DFF',
+            secondary: '#36D399',
+            warning: '#FFAB00',
+            danger: '#F87272',
+            dark: '#1E293B',
+            light: '#F8FAFC'
+          },
+          fontFamily: {
+            inter: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+                  .content-auto {
+                    content-visibility: auto;
+                  }
+                  .card-shadow {
+                    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+                  }
+                  .hover-scale {
+                    transition: transform 0.2s ease-in-out;
+                  }
+                  .hover-scale:hover {
+                    transform: scale(1.02);
+                  }
+                }
+              </style>
+</head>
+
+<body class="font-inter bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+  <!-- 顶部导航 -->
+  <header class="bg-primary text-white shadow-md">
+    <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center">
+        <i class="fa fa-user-circle-o text-2xl mr-2"></i>
+        <h1 class="text-xl font-bold">管理员面板</h1>
+      </div>
+      <div class="flex items-center">
+        <span id="admin-name" class="mr-4">管理员: 张老师</span>
+        <button id="logout-btn" class="flex items-center text-white hover:text-gray-200 transition-colors">
+          <i class="fa fa-sign-out mr-1"></i> 退出
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主内容区 -->
+  <div class="flex-1 flex">
+    <!-- 侧边栏 -->
+    <aside class="w-64 bg-dark text-white shadow-lg">
+      <nav class="py-4">
+        <div class="px-4 mb-6">
+          <h2 class="text-lg font-semibold text-gray-400 uppercase tracking-wider">系统管理</h2>
+        </div>
+        <ul class="space-y-1">
+          <li>
+            <a href="#"
+              class="nav-link text-gray-300 flex items-center px-4 py-3 hover:bg-primary/20 hover:text-white transition-colors">
+              <i class="fa fa-tachometer w-6 text-center"></i>
+              <span class="ml-2">控制台</span>
+            </a>
+          </li>
+          <li>
+            <a href="#"
+              class="nav-link text-gray-300 flex items-center px-4 py-3 hover:bg-primary/20 hover:text-white transition-colors">
+              <i class="fa fa-users w-6 text-center"></i>
+              <span class="ml-2">用户管理</span>
+            </a>
+          </li>
+          <li>
+            <a href="#"
+              class="nav-link text-gray-300 flex items-center px-4 py-3 hover:bg-primary/20 hover:text-white transition-colors">
+              <i class="fa fa-book w-6 text-center"></i>
+              <span class="ml-2">课程管理</span>
+            </a>
+          </li>
+          <li>
+            <a href="#"
+              class="nav-link bg-primary/20 text-white flex items-center px-4 py-3 hover:bg-primary/30 transition-colors">
+              <i class="fa fa-calendar-check-o w-6 text-center"></i>
+              <span class="ml-2">选课审核</span>
+            </a>
+          </li>
+          <li>
+            <a href="#"
+              class="nav-link text-gray-300 flex items-center px-4 py-3 hover:bg-primary/20 hover:text-white transition-colors">
+              <i class="fa fa-history w-6 text-center"></i>
+              <span class="ml-2">操作日志</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- 主面板 -->
+    <main class="flex-1 p-6 overflow-auto">
+      <div class="container mx-auto">
+        <!-- 页面标题 -->
+        <div class="mb-8">
+          <h2 class="text-2xl font-bold text-gray-800 mb-2">选课审核</h2>
+          <p class="text-gray-600">管理学生的选课申请，处理审核请求</p>
+        </div>
+
+        <!-- 搜索和筛选 -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8 border border-gray-200">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex-1">
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                  <i class="fa fa-search"></i>
+                </span>
+                <input type="text" id="selection-search" placeholder="搜索学生或课程..."
+                  class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-3">
+              <select id="selection-status-filter"
+                class="bg-white border border-gray-300 text-gray-700 py-3 px-4 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                <option value="all">所有状态</option>
+                <option value="pending">待审核</option>
+                <option value="approved">已通过</option>
+                <option value="rejected">已拒绝</option>
+              </select>
+
+              <select id="selection-course-filter"
+                class="bg-white border border-gray-300 text-gray-700 py-3 px-4 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                <option value="all">所有课程</option>
+                <option value="CS101">数据结构</option>
+                <option value="MATH201">高等数学</option>
+                <option value="CS202">人工智能基础</option>
+                <option value="PHYS101">大学物理</option>
+              </select>
+
+              <select id="selection-department-filter"
+                class="bg-white border border-gray-300 text-gray-700 py-3 px-4 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                <option value="all">所有院系</option>
+                <option value="computer">计算机学院</option>
+                <option value="math">数学学院</option>
+                <option value="physics">物理学院</option>
+                <option value="chemistry">化学学院</option>
+              </select>
+
+              <button id="batch-approve-btn"
+                class="bg-secondary hover:bg-secondary/90 text-white py-3 px-4 rounded-lg transition-colors flex items-center">
+                <i class="fa fa-check mr-2"></i> 批量通过
+              </button>
+
+              <button id="batch-reject-btn"
+                class="bg-danger hover:bg-danger/90 text-white py-3 px-4 rounded-lg transition-colors flex items-center">
+                <i class="fa fa-times mr-2"></i> 批量拒绝
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 选课申请列表 -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden mb-8 border border-gray-200">
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <div class="flex items-center">
+                      <input type="checkbox" id="select-all-selections"
+                        class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+                    </div>
+                  </th>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <button class="flex items-center">
+                      <span>申请ID</span>
+                      <i class="fa fa-sort ml-1"></i>
+                    </button>
+                  </th>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <button class="flex items-center">
+                      <span>学生信息</span>
+                      <i class="fa fa-sort ml-1"></i>
+                    </button>
+                  </th>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <button class="flex items-center">
+                      <span>课程信息</span>
+                      <i class="fa fa-sort ml-1"></i>
+                    </button>
+                  </th>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <button class="flex items-center">
+                      <span>申请时间</span>
+                      <i class="fa fa-sort ml-1"></i>
+                    </button>
+                  </th>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <button class="flex items-center">
+                      <span>状态</span>
+                      <i class="fa fa-sort ml-1"></i>
+                    </button>
+                  </th>
+                  <th scope="col"
+                    class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <!-- 选课申请数据行 -->
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <input type="checkbox"
+                      class="selection-checkbox h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900">AP2025001</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <img class="h-8 w-8 rounded-full" src="https://picsum.photos/seed/student1/100/100" alt="学生头像">
+                      <div class="ml-3">
+                        <div class="text-sm font-medium text-gray-900">张三</div>
+                        <div class="text-xs text-gray-500">student001 | 计算机学院</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900">数据结构</div>
+                    <div class="text-xs text-gray-500">CS101 | 王老师</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    2025-06-01 09:30
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">待审核</span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <button class="text-green-600 hover:text-green-800 mr-3 approve-selection-btn">
+                      <i class="fa fa-check mr-1"></i> 通过
+                    </button>
+                    <button class="text-red-500 hover:text-red-700 reject-selection-btn">
+                      <i class="fa fa-times mr-1"></i> 拒绝
+                    </button>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <input type="checkbox"
+                      class="selection-checkbox h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900">AP2025002</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <img class="h-8 w-8 rounded-full" src="https://picsum.photos/seed/student2/100/100" alt="学生头像">
+                      <div class="ml-3">
+                        <div class="text-sm font-medium text-gray-900">李四</div>
+                        <div class="text-xs text-gray-500">student002 | 物理学院</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900">高等数学</div>
+                    <div class="text-xs text-gray-500">MATH201 | 李老师</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    2025-06-01 10:15
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">已通过</span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <button class="text-gray-400 cursor-not-allowed">
+                      <i class="fa fa-check mr-1"></i> 通过
+                    </button>
+                    <button class="text-gray-400 cursor-not-allowed">
+                      <i class="fa fa-times mr-1"></i> 拒绝
+                    </button>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <input type="checkbox"
+                      class="selection-checkbox h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900">AP2025003</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <img class="h-8 w-8 rounded-full" src="https://picsum.photos/seed/student3/100/100" alt="学生头像">
+                      <div class="ml-3">
+                        <div class="text-sm font-medium text-gray-900">王五</div>
+                        <div class="text-xs text-gray-500">student003 | 计算机学院</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900">人工智能基础</div>
+                    <div class="text-xs text-gray-500">CS202 | 张老师</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    2025-06-02 14:20
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">已拒绝</span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <button class="text-gray-400 cursor-not-allowed">
+                      <i class="fa fa-check mr-1"></i> 通过
+                    </button>
+                    <button class="text-gray-400 cursor-not-allowed">
+                      <i class="fa fa-times mr-1"></i> 拒绝
+                    </button>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <input type="checkbox"
+                      class="selection-checkbox h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900">AP2025004</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <img class="h-8 w-8 rounded-full" src="https://picsum.photos/seed/student4/100/100" alt="学生头像">
+                      <div class="ml-3">
+                        <div class="text-sm font-medium text-gray-900">赵六</div>
+                        <div class="text-xs text-gray-500">student004 | 数学学院</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900">大学物理</div>
+                    <div class="text-xs text-gray-500">PHYS101 | 赵老师</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    2025-06-03 09:45
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">待审核</span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <button class="text-green-600 hover:text-green-800 mr-3 approve-selection-btn">
+                      <i class="fa fa-check mr-1"></i> 通过
+                    </button>
+                    <button class="text-red-500 hover:text-red-700 reject-selection-btn">
+                      <i class="fa fa-times mr-1"></i> 拒绝
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- 分页 -->
+          <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+            <div class="flex-1 flex justify-between sm:hidden">
+              <button
+                class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                上一页
+              </button>
+              <button
+                class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                下一页
+              </button>
+            </div>
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+              <div>
+                <p class="text-sm text-gray-700">
+                  显示第 <span class="font-medium">1</span> 至 <span class="font-medium">4</span> 条，共 <span
+                    class="font-medium">24</span> 条记录
+                </p>
+              </div>
+              <div>
+                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                  <button
+                    class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                    <span class="sr-only">上一页</span>
+                    <i class="fa fa-chevron-left"></i>
+                  </button>
+                  <button
+                    class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-primary text-sm font-medium text-white">
+                    1
+                  </button>
+                  <button
+                    class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                    2
+                  </button>
+                  <button
+                    class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                    3
+                  </button>
+                  <span
+                    class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                    ...
+                  </span>
+                  <button
+                    class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                    6
+                  </button>
+                  <button
+                    class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                    <span class="sr-only">下一页</span>
+                    <i class="fa fa-chevron-right"></i>
+                  </button>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- 审核结果模态框 -->
+  <div id="review-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+    <div
+      class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 overflow-hidden transform transition-all border border-gray-300">
+      <div class="p-6 border-b border-gray-200">
+        <h3 class="text-lg font-bold text-gray-900" id="review-modal-title">审核结果</h3>
+      </div>
+      <div class="p-6">
+        <div id="review-success" class="hidden">
+          <div class="text-center">
+            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
+              <i class="fa fa-check text-green-600 text-3xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">审核成功</h3>
+            <p class="text-sm text-gray-500 mb-6" id="review-success-message">
+              选课申请已成功处理
+            </p>
+          </div>
+        </div>
+
+        <div id="review-error" class="hidden">
+          <div class="text-center">
+            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
+              <i class="fa fa-times text-red-600 text-3xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">审核失败</h3>
+            <p class="text-sm text-gray-500 mb-6" id="review-error-message">
+              处理选课申请时发生错误
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="p-6 border-t border-gray-200 flex justify-center">
+        <button id="close-review-modal"
+          class="px-6 py-2 bg-primary border border-transparent rounded-lg text-sm font-medium text-white hover:bg-primary/90 transition-colors">
+          确定
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 拒绝理由模态框 -->
+  <div id="reject-reason-modal"
+    class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+    <div
+      class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 overflow-hidden transform transition-all border border-gray-300">
+      <div class="p-6 border-b border-gray-200">
+        <h3 class="text-lg font-bold text-gray-900">拒绝理由</h3>
+      </div>
+      <div class="p-6">
+        <form id="reject-reason-form" class="space-y-4">
+          <div>
+            <label for="reject-reason" class="block text-sm font-medium text-gray-700 mb-1">请输入拒绝理由</label>
+            <textarea id="reject-reason" name="reject-reason" rows="4" required
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+              placeholder="请输入拒绝该选课申请的理由"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="p-6 border-t border-gray-200 flex justify-end space-x-3">
+        <button id="cancel-reject-btn"
+          class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+          取消
+        </button>
+        <button id="confirm-reject-btn"
+          class="px-4 py-2 bg-danger border border-transparent rounded-lg text-sm font-medium text-white hover:bg-danger/90 transition-colors">
+          确认拒绝
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 退出登录
+    document.getElementById('admin-logout-btn').addEventListener('click', function () {
+      if (confirm('确定要退出登录吗？')) {
+        window.location.href = 'login.html';
+      }
+    });
+
+    // 审核相关模态框
+    const reviewModal = document.getElementById('review-modal');
+    const reviewSuccess = document.getElementById('review-success');
+    const reviewError = document.getElementById('review-error');
+    const reviewSuccessMessage = document.getElementById('review-success-message');
+    const reviewErrorMessage = document.getElementById('review-error-message');
+    const rejectReasonModal = document.getElementById('reject-reason-modal');
+    const rejectReasonInput = document.getElementById('reject-reason');
+    let currentSelectionId = null;
+
+    // 通过选课申请
+    document.querySelectorAll('.approve-selection-btn').forEach(btn => {
+      btn.addEventListener('click', function () {
+        const row = this.closest('tr');
+        currentSelectionId = row.querySelector('td:nth-child(2)').textContent.trim();
+
+        // 模拟通过选课申请
+        setTimeout(() => {
+          showReviewResult(true, '选课申请已成功通过审核');
+        }, 500);
+      });
+    });
+
+    // 批量通过选课申请
+    document.getElementById('batch-approve-btn').addEventListener('click', function () {
+      const checkedBoxes = document.querySelectorAll('.selection-checkbox:checked');
+
+      if (checkedBoxes.length === 0) {
+        showReviewResult(false, '请先选择要通过的选课申请');
+        return;
+      }
+
+      // 模拟批量通过选课申请
+      setTimeout(() => {
+        showReviewResult(true, `已成功通过 ${checkedBoxes.length} 条选课申请`);
+      }, 800);
+    });
+
+    // 拒绝选课申请
+    document.querySelectorAll('.reject-selection-btn').forEach(btn => {
+      btn.addEventListener('click', function () {
+        const row = this.closest('tr');
+        currentSelectionId = row.querySelector('td:nth-child(2)').textContent.trim();
+
+        // 打开拒绝理由模态框
+        rejectReasonModal.classList.remove('hidden');
+      });
+    });
+
+    // 批量拒绝选课申请
+    document.getElementById('batch-reject-btn').addEventListener('click', function () {
+      const checkedBoxes = document.querySelectorAll('.selection-checkbox:checked');
+
+      if (checkedBoxes.length === 0) {
+        showReviewResult(false, '请先选择要拒绝的选课申请');
+        return;
+      }
+
+      // 打开拒绝理由模态框
+      rejectReasonModal.classList.remove('hidden');
+    });
+
+    // 取消拒绝
+    document.getElementById('cancel-reject-btn').addEventListener('click', function () {
+      rejectReasonModal.classList.add('hidden');
+      rejectReasonInput.value = '';
+    });
+
+    // 确认拒绝
+    document.getElementById('confirm-reject-btn').addEventListener('click', function () {
+      const reason = rejectReasonInput.value.trim();
+
+      if (!reason) {
+        alert('请输入拒绝理由');
+        return;
+      }
+
+      // 关闭拒绝理由模态框
+      rejectReasonModal.classList.add('hidden');
+
+      // 模拟拒绝选课申请
+      setTimeout(() => {
+        showReviewResult(true, '选课申请已成功拒绝');
+      }, 500);
+    });
+
+    // 显示审核结果
+    function showReviewResult(success, message) {
+      if (success) {
+        reviewSuccess.classList.remove('hidden');
+        reviewError.classList.add('hidden');
+        reviewSuccessMessage.textContent = message;
+      } else {
+        reviewSuccess.classList.add('hidden');
+        reviewError.classList.remove('hidden');
+        reviewErrorMessage.textContent = message;
+      }
+
+      reviewModal.classList.remove('hidden');
+    }
+
+    // 关闭审核结果模态框
+    document.getElementById('close-review-modal').addEventListener('click', function () {
+      reviewModal.classList.add('hidden');
+
+      // 如果是成功处理，模拟更新表格状态
+      if (reviewSuccess.classList.contains('hidden') === false) {
+        if (currentSelectionId) {
+          // 找到对应的行并更新状态
+          const row = Array.from(document.querySelectorAll('tbody tr')).find(
+            tr => tr.querySelector('td:nth-child(2)').textContent.trim() === currentSelectionId
+          );
+
+          if (row) {
+            const statusCell = row.querySelector('td:nth-child(6)');
+            const actionCell = row.querySelector('td:nth-child(7)');
+
+            if (statusCell.querySelector('span').classList.contains('bg-yellow-100')) {
+              // 原来是待审核状态
+              statusCell.innerHTML = '<span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">已通过</span>';
+              actionCell.innerHTML = `
+                <button class="text-gray-400 cursor-not-allowed">
+                  <i class="fa fa-check mr-1"></i> 通过
+                </button>
+                <button class="text-gray-400 cursor-not-allowed">
+                  <i class="fa fa-times mr-1"></i> 拒绝
+                </button>
+              `;
+            }
+          }
+
+          currentSelectionId = null;
+        }
+      }
+    });
+
+    // 全选/取消全选选课申请
+    document.getElementById('select-all-selections').addEventListener('change', function () {
+      const checkboxes = document.querySelectorAll('.selection-checkbox');
+      checkboxes.forEach(checkbox => {
+        checkbox.checked = this.checked;
+      });
+    });
+
+    // 搜索选课申请
+    document.getElementById('selection-search').addEventListener('input', function () {
+      const searchText = this.value.toLowerCase();
+      const rows = document.querySelectorAll('tbody tr');
+
+      rows.forEach(row => {
+        const studentName = row.querySelector('td:nth-child(3) div:first-child').textContent.toLowerCase();
+        const courseName = row.querySelector('td:nth-child(4) div:first-child').textContent.toLowerCase();

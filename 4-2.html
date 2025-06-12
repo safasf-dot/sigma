@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智能选课系统 - 学生面板</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#165DFF',
+            secondary: '#36D399',
+            warning: '#FFAB00',
+            danger: '#F87272',
+            dark: '#1E293B',
+            light: '#F8FAFC'
+          },
+          fontFamily: {
+            inter: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+              .content-auto {
+                content-visibility: auto;
+              }
+              .card-shadow {
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+              }
+              .hover-scale {
+                transition: transform 0.2s ease-in-out;
+              }
+              .hover-scale:hover {
+                transform: scale(1.02);
+              }
+            }
+          </style>
+</head>
+
+<body class="font-inter bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+  <!-- 顶部导航 -->
+  <header class="bg-primary text-white shadow-md">
+    <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center">
+        <i class="fa fa-user text-2xl mr-2"></i>
+        <h1 class="text-xl font-bold">学生面板</h1>
+      </div>
+      <div class="flex items-center">
+        <span id="student-name" class="mr-4">学生: 赵同学</span>
+        <button id="student-logout-btn" class="flex items-center text-white hover:text-gray-200 transition-colors">
+          <i class="fa fa-sign-out mr-1"></i> 退出
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主内容区 -->
+  <div class="flex-1 flex">
+    <!-- 侧边栏 -->
+    <aside class="w-64 bg-dark text-white shadow-lg">
+      <nav class="py-4">
+        <div class="px-4 mb-6">
+          <h2 class="text-lg font-semibold text-gray-400 uppercase tracking-wider">课程管理</h2>
+        </div>
+        <ul class="space-y-1">
+          <li>
+            <a href="#"
+              class="nav-link text-gray-300 flex items-center px-4 py-3 hover:bg-primary/20 hover:text-white transition-colors">
+              <i class="fa fa-tachometer w-6 text-center"></i>
+              <span class="ml-2">我的课程</span>
+            </a>
+          </li>
+          <li>
+            <a href="#"
+              class="nav-link text-gray-300 flex items-center px-4 py-3 hover:bg-primary/20 hover:text-white transition-colors">
+              <i class="fa fa-search w-6 text-center"></i>
+              <span class="ml-2">选课中心</span>
+            </a>
+          </li>
+          <li>
+            <a href="#"
+              class="nav-link bg-primary/20 text-white flex items-center px-4 py-3 hover:bg-primary/30 transition-colors">
+              <i class="fa fa-graduation-cap w-6 text-center"></i>
+              <span class="ml-2">成绩查询</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- 主面板 -->
+    <main class="flex-1 p-6 overflow-auto">
+      <div class="container mx-auto">
+        <!-- 页面标题 -->
+        <div class="mb-8">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h2 class="text-2xl font-bold text-gray-800 mb-2">我的成绩</h2>
+              <p class="text-gray-600">查看和分析你的课程成绩</p>
+            </div>
+            <div>
+              <div class="flex items-center space-x-4">
+                <button
+                  class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center"
+                  id="export-grades-btn">
+                  <i class="fa fa-download mr-2"></i> 导出成绩
+                </button>
+                <button
+                  class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors flex items-center"
+                  id="refresh-grades-btn">
+                  <i class="fa fa-refresh mr-2"></i> 刷新成绩
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 筛选条件 -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8 border border-gray-200">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div>
+              <label for="grade-semester-select" class="block text-sm font-medium text-gray-700 mb-1">选择学期</label>
+              <select id="grade-semester-select"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                <option value="all">全部学期</option>
+                <option value="2024-2025-2" selected>2024-2025学年第二学期</option>
+                <option value="2024-2025-1">2024-2025学年第一学期</option>
+                <option value="2023-2024-2">2023-2024学年第二学期</option>
+                <option value="2023-2024-1">2023-2024学年第一学期</option>
+              </select>
+            </div>
+            <div>
+              <label for="grade-type-select" class="block text-sm font-medium text-gray-700 mb-1">课程类型</label>
+              <select id="grade-type-select"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                <option value="all">全部课程</option>
+                <option value="required">必修课程</option>
+                <option value="elective">选修课程</option>
+                <option value="public">公共课程</option>
+              </select>
+            </div>
+            <div>
+              <label for="grade-status-select" class="block text-sm font-medium text-gray-700 mb-1">成绩状态</label>
+              <select id="grade-status-select"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                <option value="all">全部成绩</option>
+                <option value="published">已发布</option>
+                <option value="pending">未发布</option>
+              </select>
+            </div>
+            <div>
+              <label for="grade-search" class="block text-sm font-medium text-gray-700 mb-1">搜索课程</label>
+              <div class="relative">
+                <input type="text" id="grade-search" placeholder="输入课程名称或教师"
+                  class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                <i class="fa fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-6 flex flex-wrap gap-2">
+            <span class="chip bg-gray-100 text-gray-700">
+              <span class="font-medium">筛选:</span> 已发布
+            </span>
+            <span class="chip bg-gray-100 text-gray-700">
+              <span class="font-medium">学期:</span> 2024-2025学年第二学期
+            </span>
+            <button class="chip bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+              <i class="fa fa-sliders mr-1"></i> 更多筛选
+            </button>
+            <button class="chip bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors ml-auto">
+              <i class="fa fa-times mr-1"></i> 清除全部
+            </button>
+          </div>
+        </div>
+
+        <!-- 成绩统计 -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200 hover-scale">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-medium text-gray-500 mb-1">平均绩点</p>
+                <h3 class="text-3xl font-bold text-gray-900">3.8</h3>
+              </div>
+              <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                <i class="fa fa-line-chart text-primary text-xl"></i>
+              </div>
+            </div>
+            <div class="mt-4">
+              <div class="flex items-center">
+                <span class="text-xs font-medium text-green-600 flex items-center">
+                  <i class="fa fa-arrow-up mr-1"></i> 0.2
+                </span>
+                <span class="text-xs text-gray-500 ml-2">较上学期</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200 hover-scale">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-medium text-gray-500 mb-1">已修课程</p>
+                <h3 class="text-3xl font-bold text-gray-900">16</h3>
+              </div>
+              <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                <i class="fa fa-book text-secondary text-xl"></i>
+              </div>
+            </div>
+            <div class="mt-4">
+              <div class="flex items-center">
+                <span class="text-xs font-medium text-green-600 flex items-center">
+                  <i class="fa fa-arrow-up mr-1"></i> 4
+                </span>
+                <span class="text-xs text-gray-500 ml-2">较上学期</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200 hover-scale">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-medium text-gray-500 mb-1">已获学分</p>
+                <h3 class="text-3xl font-bold text-gray-900">56</h3>
+              </div>
+              <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                <i class="fa fa-graduation-cap text-purple-600 text-xl"></i>
+              </div>
+            </div>
+            <div class="mt-4">
+              <div class="flex items-center">
+                <span class="text-xs font-medium text-green-600 flex items-center">
+                  <i class="fa fa-arrow-up mr-1"></i> 12
+                </span>
+                <span class="text-xs text-gray-500 ml-2">较上学期</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200 hover-scale">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-medium text-gray-500 mb-1">排名情况</p>
+                <h3 class="text-3xl font-bold text-gray-900">12%</h3>
+              </div>
+              <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                <i class="fa fa-trophy text-warning text-xl"></i>
+              </div>
+            </div>
+            <div class="mt-4">
+              <div class="flex items-center">
+                <span class="text-xs font-medium text-green-600 flex items-center">
+                  <i class="fa fa-arrow-up mr-1"></i> 5%
+                </span>
+                <span class="text-xs text-gray-500 ml-2">较上学期</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 成绩图表和详情 -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <!-- 成绩图表 -->
+          <div class="lg:col-span-1">
+            <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-200">
+              <div class="p-5 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">成绩分布</h3>
+              </div>
+              <div class="p-5">
+                <div class="flex items-center justify-between mb-6">
+                  <div>
+                    <p class="text-sm text-gray-500">绩点区间</p>
+                    <h4 class="text-lg font-bold text-gray-900">3.5 - 4.0</h4>
+                  </div>
+                  <div class="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
+                    <span class="text-lg font-bold text-secondary">优</span>
+                  </div>
+                </div>
+
+                <!-- 图表 -->
+                <div class="h-64 mb-6">
+                  <canvas id="gradeChart"></canvas>
+                </div>
+
+                <!-- 统计数据 -->
+                <div class="space-y-4">
+                  <div>
+                    <div class="flex justify-between text-sm mb-1">
+                      <span class="text-gray-600">优秀 (90-100)</span>
+                      <span class="font-medium">5门</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                      <div class="bg-green-500 h-2 rounded-full" style="width: 31%"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="flex justify-between text-sm mb-1">
+                      <span class="text-gray-600">良好 (80-89)</span>
+                      <span class="font-medium">6门</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                      <div class="bg-blue-500 h-2 rounded-full" style="width: 38%"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="flex justify-between text-sm mb-1">
+                      <span class="text-gray-600">中等 (70-79)</span>
+                      <span class="font-medium">3门</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                      <div class="bg-yellow-500 h-2 rounded-full" style="width: 19%"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="flex justify-between text-sm mb-1">
+                      <span class="text-gray-600">及格 (60-69)</span>
+                      <span class="font-medium">1门</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                      <div class="bg-orange-500 h-2 rounded-full" style="width: 6%"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="flex justify-between text-sm mb-1">
+                      <span class="text-gray-600">不及格 (<60)< /span>
+                          <span class="font-medium">0门</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                      <div class="bg-red-500 h-2 rounded-full" style="width: 0%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 成绩趋势 -->
+            <div class="mt-6 bg-white rounded-xl shadow-md overflow-hidden border border-gray-200">
+              <div class="p-5 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">绩点趋势</h3>
+              </div>
+              <div class="p-5">
+                <div class="h-64">
+                  <canvas id="gpaTrendChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 成绩详情 -->
+          <div class="lg:col-span-2">
+            <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-200">
+              <div class="p-5 border-b border-gray-200">
+                <div class="flex justify-between items-center">
+                  <h3 class="text-lg font-semibold text-gray-900">成绩详情</h3>
+                  <div class="flex items-center space-x-2">
+                    <span class="text-sm text-gray-500">显示:</span>
+                    <select
+                      class="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                      <option value="all">全部成绩</option>
+                      <option value="required">必修课程</option>
+                      <option value="elective">选修课程</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                  <thead class="bg-gray-50">
+                    <tr>
+                      <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">课程名称</th>
+                      <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">课程类型</th>
+                      <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">学分</th>
+                      <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">教师</th>
+                      <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">平时成绩</th>
+                      <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">期中成绩</th>
+                      <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">期末成绩</th>
+                      <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">总评成绩</th>
+                      <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">绩点</th>
+                      <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
+                    </tr>
+                  </thead>
+                  <tbody class="bg-white divide-y divide-gray-200">
+                    <tr>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                          <div class="ml-4">
+                            <div class="text-sm font-medium text-gray-900">数据结构</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="chip bg-blue-100 text-blue-800">必修</span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">3</td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">王教授</td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">90</td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">92</td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">94</td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="text-sm font-medium text-green-600">92.2</span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="grade-badge bg-green-100 text-green-800">4.0</span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="grade-badge bg-green-100 text-green-800">已发布</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                          <div class="ml-4">
+                            <div class="text-sm font-medium text-gray-900">人工智能基础</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="chip bg-purple-100 text-purple-800">选修</span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">4</td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">李教授</td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">88</td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">90</td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">87</td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="text-sm font-medium text-green-600">88.3</span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="grade-badge bg-green-100 text-green-800">3.7</span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="grade-badge bg-green-100 text-green-800">已发布</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                          <div class="ml-4">
+                            <div class="text-sm font-medium text-gray-900">高等数学</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="chip bg-blue-100 text-blue-800">必修</span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">4</td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">张教授</td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">85</td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">82</td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">88</td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="text-sm font-medium text-green-600">85.5</span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="grade-badge bg-green-100 text-green-800">3.3</span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="grade-badge bg-green-100 text-green-800">已发布</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                          <div class="ml-4">
+                            <div class="text-sm font-medium text-gray-900">大学物理</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="chip bg-blue-100 text-blue-800">必修</span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">3</td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">赵教授</td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">78</td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">80</td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">75</td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="text-sm font-medium text-green-600">77.3</span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="grade-badge bg-yellow-100 text-yellow-800">2.7</span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="grade-badge bg-green-100 text-green-800">已发布</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                          <div class="ml-4">
+                            <div class="text-sm font-medium text-gray-900">计算机网络</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="chip bg-blue-100 text-blue-800">必修</span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">3</td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">刘教授</td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">92</td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">88</td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="text-sm text-gray-400">-</span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="text-sm text-gray-400">-</span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="text-sm text-gray-400">-</span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="grade-badge bg-yellow-100 text-yellow-800">未发布</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                          <div class="ml-4">
+                            <div class="text-sm font-medium text-gray-900">专业英语</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="chip bg-purple-100 text-purple-800">选修</span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2</td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">李教授</td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">85</td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">87</td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">89</td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="text-sm font-medium text-green-600">87.4</span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="grade-badge bg-green-100 text-green-800">3.7</span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="grade-badge bg-green-100 text-green-800">已发布</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- 分页 -->
+              <div class="px-6 py-4 bg-white border-t border-gray-200 flex items-center justify-between">
+                <div class="flex-1 flex justify-between sm:hidden">
+                  <a href="#"
+                    class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    上一页
+                  </a>
+                  <a href="#"
+                    class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    下一页
+                  </a>
+                </div>
+                <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                  <div>
+                    <p class="text-sm text-gray-700">
+                      显示第 <span class="font-medium">1</span> 到 <span class="font-medium">6</span> 条，共 <span
+                        class="font-medium">24</span> 条记录
+                    </p>
+                  </div>
+                  <div>
+                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                      <a href="#"
+                        class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                        <span class="sr-only">上一页</span>
+                        <i class="fa fa-chevron-left"></i>
+                      </a>
+                      <a href="#" aria-current="page"
+                        class="z-10 bg-primary text-white relative inline-flex items-center px-4 py-2 border border-primary text-sm font-medium">
+                        1
+                      </a>
+                      <a href="#"
+                        class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                        2
+                      </a>
+                      <a href="#"
+                        class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                        3
+                      </a>
+                      <span
+                        class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                        ...
+                      </span>
+                      <a href="#"
+                        class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                        5
+                      </a>
+                      <a href="#"
+                        class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                        <span class="sr-only">下一页</span>
+                        <i class="fa fa-chevron-right"></i>
+                      </a>
+                    </nav>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 成绩详情说明 -->
+            <div class="mt-6 bg-white rounded-xl shadow-md p-6 border border-gray-200">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">成绩说明</h3>
+              <div class="space-y-4 text-sm text-gray-600">
+                <div class="flex items-start">
+                  <i class="fa fa-info-circle text-primary mt-1 mr-2"></i>
+                  <span>总评成绩 = 平时成绩 × 30% + 期中成绩 × 20% + 期末成绩 × 50%</span>
+                </div>
+                <div class="flex items-start">
+                  <i class="fa fa-info-circle text-primary mt-1 mr-2"></i>
+                  <span>绩点计算方式：90-100分=4.0，85-89分=3.7，82-84分=3.3，78-81分=3.0，75-77分=2.7，72-74分=2.3，68-71分=2.0，64-67分=1.5，60-63分=1.0，60分以下=0</span>
+                </div>
+                <div class="flex items-start">
+                  <i class="fa fa-exclamation-triangle text-warning mt-1 mr-2"></i>
+                  <span>计算机网络课程的期末成绩尚未发布，预计发布时间为2025年6月15日</span>
+                </div>
+                <div class="flex items-start">
+                  <i class="fa fa-question-circle text-primary mt-1 mr-2"></i>
+                  <span>如有成绩疑问，请在成绩发布后5个工作日内向教务处提出复核申请</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+  <script>
+    // 退出登录
+    document.getElementById('student-logout-btn').addEventListener('click', function () {
+      if (confirm('确定要退出登录吗？')) {
+        window.location.href = 'login.html';
+      }
+    });
+
+    // 成绩筛选和搜索
+    document.getElementById('grade-search').addEventListener('input', function () {
+      // 模拟搜索功能
+      const searchTerm = this.value.toLowerCase();
+      console.log(`搜索课程: ${searchTerm}`);
+      // 实际应用中这里会有筛选课程的逻辑
+    });
+
+    // 学期和类型筛选
+    document.getElementById('grade-semester-select').addEventListener('change', function () {
+      const selectedSemester = this.value;
+      console.log(`筛选学期: ${selectedSemester}`);
+      // 实际应用中这里会有筛选课程的逻辑
+    });
+
+    document.getElementById('grade-type-select').addEventListener('change', function () {
+      const selectedType = this.value;
+      console.log(`筛选课程类型: ${selectedType}`);
+      // 实际应用中这里会有筛选课程的逻辑
+    });
+
+    document.getElementById('grade-status-select').addEventListener('change', function () {
+      const selectedStatus = this.value;
+      console.log(`筛选成绩状态: ${selectedStatus}`);
+      // 实际应用中这里会有筛选课程的逻辑
+    });
+
+    // 初始化成绩分布图
+    const gradeCtx = document.getElementById('gradeChart').getContext('2d');
+    const gradeChart = new Chart(gradeCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['优秀 (90-100)', '良好 (80-89)', '中等 (70-79)', '及格 (60-69)', '不及格 (<60)'],
+        datasets: [{
+          data: [5, 6, 3, 1, 0],
+          backgroundColor: [
+            '#10B981', // 绿色
+            '#3B82F6', // 蓝色
+            '#F59E0B', // 黄色
+            '#F97316', // 橙色
+            '#EF4444', // 红色
+          ],
+          borderWidth: 0,
+          hoverOffset: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '70%',
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              boxWidth: 12,
+              padding: 15,
+              font: {
+                size: 11
+              }
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: function (context) {
+                return `${context.label}: ${context.raw}门课程`;
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // 初始化绩点趋势图
+    const gpaCtx = document.getElementById('gpaTrendChart').getContext('2d');
+    const gpaTrendChart = new Chart(gpaCtx, {
+      type: 'line',
+      data: {
+        labels: ['2023-1', '2023-2', '2024-1', '2024-2', '2025-1'],
+        datasets: [{
+          label: '平均绩点',
+          data: [3.2, 3.4, 3.6, 3.7, 3.8],
+          borderColor: '#165DFF',
+          backgroundColor: 'rgba(22, 93, 255, 0.1)',
+          tension: 0.3,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: false,
+            min: 2.5,
+            max: 4.0,
+            ticks: {
+              stepSize: 0.5
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            callbacks: {
+              label: function (context) {
+                return `平均绩点: ${context.raw}`;
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // 导出成绩
+    document.getElementById('export-grades-btn').addEventListener('click', function () {
+      // 模拟导出功能
+      this.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i> 导出中...';
+      this.disabled = true;
+
+      setTimeout(() => {
+        this.innerHTML = '<i class="fa fa-download mr-2"></i> 导出成绩';
+        this.disabled = false;
+
+        // 创建一个临时的a标签来触发下载
+        const link = document.createElement('a');
+        link.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent('学生成绩报告\n\n2024-2025学年第二学期\n\n平均绩点: 3.8\n\n课程列表:\n1. 数据结构 - 92.2 (4.0)\n2. 人工智能基础 - 88.3 (3.7)\n3. 高等数学 - 85.5 (3.3)\n4. 大学物理 - 77.3 (2.7)\n5. 专业英语 - 87.4 (3.7)\n\n计算机网络 - 未发布');
+        link.download = '2024-2025-2成绩报告.txt';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        // 显示成功提示
+        const notification = document.createElement('div');
+        notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg z-50';
+        notification.textContent = '成绩已成功导出为TXT文件';
+        document.body.appendChild(notification);
+
+        // 3秒后自动消失
+        setTimeout(() => {
+          notification.style.opacity = '0';
+          notification.style.transition = 'opacity 0.5s';
+          setTimeout(() => {
+            document.body.removeChild(notification);
+          }, 500);
+        }, 3000);
+      }, 1500);
+    });
+
+    // 刷新成绩
+    document.getElementById('refresh-grades-btn').addEventListener('click', function () {
+      // 显示加载中
+      this.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i> 刷新中...';
+      this.disabled = true;
+
+      // 模拟刷新
+      setTimeout(() => {
+        this.innerHTML = '<i class="fa fa-refresh mr-2"></i> 刷新成绩';
+        this.disabled = false;
+
+        // 显示成功提示
+        const notification = document.createElement('div');
+        notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg z-50';
+        notification.textContent = '成绩已刷新，没有新更新';
+        document.body.appendChild(notification);
+
+        // 3秒后自动消失
+        setTimeout(() => {
+          notification.style.opacity = '0';
+          notification.style.transition = 'opacity 0.5s';
+          setTimeout(() => {
+            document.body.removeChild(notification);
+          }, 500);
+        }, 3000);
+      }, 1000);
+    });
+  </script>
+</body>
+
+</html>

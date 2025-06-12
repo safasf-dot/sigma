@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智能选课系统 - 我的课程</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#165DFF',
+            secondary: '#36D399',
+            warning: '#FFAB00',
+            danger: '#F87272',
+            dark: '#1E293B',
+            light: '#F8FAFC'
+          },
+          fontFamily: {
+            inter: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+              .content-auto {
+                content-visibility: auto;
+              }
+              .card-shadow {
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+              }
+              .hover-scale {
+                transition: transform 0.2s ease-in-out;
+              }
+              .hover-scale:hover {
+                transform: scale(1.02);
+              }
+              .progress-bar {
+                height: 8px;
+                border-radius: 4px;
+                background-color: #E5E7EB;
+              }
+              .progress-value {
+                height: 100%;
+                border-radius: 4px;
+              }
+            }
+          </style>
+</head>
+
+<body class="font-inter bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+  <!-- 顶部导航 -->
+  <header class="bg-primary text-white shadow-md">
+    <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center">
+        <i class="fa fa-graduation-cap text-2xl mr-2"></i>
+        <h1 class="text-xl font-bold">教师面板</h1>
+      </div>
+      <div class="flex items-center">
+        <span id="teacher-name" class="mr-4">王老师</span>
+        <button id="teacher-logout-btn" class="flex items-center text-white hover:text-gray-200 transition-colors">
+          <i class="fa fa-sign-out mr-1"></i> 退出
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主内容区 -->
+  <div class="flex-1 flex">
+    <!-- 侧边栏 -->
+    <aside class="w-64 bg-dark text-white shadow-lg">
+      <nav class="py-4">
+        <div class="px-4 mb-6">
+          <h2 class="text-lg font-semibold text-gray-400 uppercase tracking-wider">教学管理</h2>
+        </div>
+        <ul class="space-y-1">
+          <li>
+            <a href="#"
+              class="nav-link text-gray-300 flex items-center px-4 py-3 hover:bg-primary/20 hover:text-white transition-colors">
+              <i class="fa fa-tachometer w-6 text-center"></i>
+              <span class="ml-2">我的课程</span>
+            </a>
+          </li>
+          <li>
+            <a href="#"
+              class="nav-link text-gray-300 flex items-center px-4 py-3 hover:bg-primary/20 hover:text-white transition-colors">
+              <i class="fa fa-calendar w-6 text-center"></i>
+              <span class="ml-2">教学日历</span>
+            </a>
+          </li>
+          <li>
+            <a href="#"
+              class="nav-link bg-primary/20 text-white flex items-center px-4 py-3 hover:bg-primary/30 transition-colors">
+              <i class="fa fa-plus-circle w-6 text-center"></i>
+              <span class="ml-2">创建新课程</span>
+            </a>
+          </li>
+          <li>
+            <a href="#"
+              class="nav-link text-gray-300 flex items-center px-4 py-3 hover:bg-primary/20 hover:text-white transition-colors">
+              <i class="fa fa-users w-6 text-center"></i>
+              <span class="ml-2">学生管理</span>
+            </a>
+          </li>
+          <li>
+            <a href="#"
+              class="nav-link text-gray-300 flex items-center px-4 py-3 hover:bg-primary/20 hover:text-white transition-colors">
+              <i class="fa fa-pencil-square-o w-6 text-center"></i>
+              <span class="ml-2">成绩管理</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- 主面板 -->
+    <main class="flex-1 p-6 overflow-auto">
+      <div class="container mx-auto">
+        <!-- 页面标题 -->
+        <div class="mb-8">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h2 class="text-2xl font-bold text-gray-800 mb-2">创建新课程</h2>
+              <p class="text-gray-600">填写以下信息创建新课程</p>
+            </div>
+            <div>
+              <a href="#"
+                class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors flex items-center">
+                <i class="fa fa-arrow-left mr-2"></i> 返回课程列表
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- 创建课程表单 -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8 border border-gray-200">
+          <form id="create-course-form" class="space-y-6">
+            <!-- 基本信息 -->
+            <div class="bg-gray-50 p-5 rounded-lg">
+              <h3 class="text-lg font-semibold text-gray-800 mb-4">课程基本信息</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label for="course-name" class="block text-sm font-medium text-gray-700 mb-1">课程名称</label>
+                  <input type="text" id="course-name" name="course-name" required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                    placeholder="请输入课程名称">
+                </div>
+
+                <div>
+                  <label for="course-code" class="block text-sm font-medium text-gray-700 mb-1">课程代码</label>
+                  <input type="text" id="course-code" name="course-code" required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                    placeholder="请输入课程代码">
+                </div>
+
+                <div>
+                  <label for="course-credit" class="block text-sm font-medium text-gray-700 mb-1">学分</label>
+                  <select id="course-credit" name="course-credit" required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                    <option value="">请选择学分</option>
+                    <option value="1">1学分</option>
+                    <option value="2">2学分</option>
+                    <option value="3">3学分</option>
+                    <option value="4">4学分</option>
+                    <option value="5">5学分</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label for="course-type" class="block text-sm font-medium text-gray-700 mb-1">课程类型</label>
+                  <select id="course-type" name="course-type" required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                    <option value="">请选择课程类型</option>
+                    <option value="compulsory">必修课</option>
+                    <option value="elective">选修课</option>
+                    <option value="practical">实践课</option>
+                    <option value="lab">实验课</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label for="course-department" class="block text-sm font-medium text-gray-700 mb-1">所属院系</label>
+                  <select id="course-department" name="course-department" required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                    <option value="">请选择院系</option>
+                    <option value="computer">计算机学院</option>
+                    <option value="math">数学与统计学院</option>
+                    <option value="physics">物理学院</option>
+                    <option value="chemistry">化学学院</option>
+                    <option value="biology">生命科学学院</option>
+                    <option value="electrical">电子信息工程学院</option>
+                    <option value="management">管理学院</option>
+                    <option value="foreign">外国语学院</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label for="course-capacity" class="block text-sm font-medium text-gray-700 mb-1">课程容量</label>
+                  <input type="number" id="course-capacity" name="course-capacity" min="1" max="200" required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                    placeholder="请输入课程容量">
+                </div>
+              </div>
+            </div>
+
+            <!-- 教学安排 -->
+            <div class="bg-gray-50 p-5 rounded-lg">
+              <h3 class="text-lg font-semibold text-gray-800 mb-4">教学安排</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label for="course-semester" class="block text-sm font-medium text-gray-700 mb-1">开课学期</label>
+                  <select id="course-semester" name="course-semester" required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                    <option value="">请选择学期</option>
+                    <option value="2025-2026-1">2025-2026学年第一学期</option>
+                    <option value="2025-2026-2">2025-2026学年第二学期</option>
+                    <option value="2026-2027-1">2026-2027学年第一学期</option>
+                    <option value="2026-2027-2">2026-2027学年第二学期</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label for="course-weekly-hours" class="block text-sm font-medium text-gray-700 mb-1">每周课时</label>
+                  <input type="number" id="course-weekly-hours" name="course-weekly-hours" min="1" max="16" required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                    placeholder="请输入每周课时">
+                </div>
+
+                <div>
+                  <label for="course-location" class="block text-sm font-medium text-gray-700 mb-1">上课地点</label>
+                  <input type="text" id="course-location" name="course-location" required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                    placeholder="请输入上课地点">
+                </div>
+
+                <div>
+                  <label for="course-day" class="block text-sm font-medium text-gray-700 mb-1">上课时间（星期）</label>
+                  <select id="course-day" name="course-day" required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                    <option value="">请选择星期</option>
+                    <option value="1">星期一</option>
+                    <option value="2">星期二</option>
+                    <option value="3">星期三</option>
+                    <option value="4">星期四</option>
+                    <option value="5">星期五</option>
+                    <option value="6">星期六</option>
+                    <option value="7">星期日</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label for="course-period" class="block text-sm font-medium text-gray-700 mb-1">上课节次</label>
+                  <select id="course-period" name="course-period" required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                    <option value="">请选择节次</option>
+                    <option value="1-2">第1-2节 (08:00-09:40)</option>
+                    <option value="3-4">第3-4节 (10:00-11:40)</option>
+                    <option value="5-6">第5-6节 (13:30-15:10)</option>
+                    <option value="7-8">第7-8节 (15:30-17:10)</option>
+                    <option value="9-10">第9-10节 (18:30-20:10)</option>
+                    <option value="11-12">第11-12节 (20:30-22:10)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label for="course-weeks" class="block text-sm font-medium text-gray-700 mb-1">上课周次</label>
+                  <select id="course-weeks" name="course-weeks" required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                    <option value="">请选择周次</option>
+                    <option value="1-16">第1-16周</option>
+                    <option value="1-18">第1-18周</option>
+                    <option value="1-20">第1-20周</option>
+                    <option value="1-8">第1-8周</option>
+                    <option value="9-16">第9-16周</option>
+                    <option value="9-20">第9-20周</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- 课程描述 -->
+            <div class="bg-gray-50 p-5 rounded-lg">
+              <h3 class="text-lg font-semibold text-gray-800 mb-4">课程描述</h3>
+              <div class="grid grid-cols-1 gap-6">
+                <div>
+                  <label for="course-description" class="block text-sm font-medium text-gray-700 mb-1">课程简介</label>
+                  <textarea id="course-description" name="course-description" rows="4" required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                    placeholder="请输入课程简介"></textarea>
+                </div>
+
+                <div>
+                  <label for="course-objectives" class="block text-sm font-medium text-gray-700 mb-1">教学目标</label>
+                  <textarea id="course-objectives" name="course-objectives" rows="4" required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                    placeholder="请输入教学目标"></textarea>
+                </div>
+
+                <div>
+                  <label for="course-outline" class="block text-sm font-medium text-gray-700 mb-1">课程大纲</label>
+                  <textarea id="course-outline" name="course-outline" rows="4" required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                    placeholder="请输入课程大纲"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- 评分标准 -->
+            <div class="bg-gray-50 p-5 rounded-lg">
+              <h3 class="text-lg font-semibold text-gray-800 mb-4">评分标准</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label for="assessment-attendance" class="block text-sm font-medium text-gray-700 mb-1">考勤占比
+                    (%)</label>
+                  <input type="number" id="assessment-attendance" name="assessment-attendance" min="0" max="100"
+                    required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                    placeholder="请输入考勤占比">
+                </div>
+
+                <div>
+                  <label for="assessment-homework" class="block text-sm font-medium text-gray-700 mb-1">作业占比 (%)</label>
+                  <input type="number" id="assessment-homework" name="assessment-homework" min="0" max="100" required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                    placeholder="请输入作业占比">
+                </div>
+
+                <div>
+                  <label for="assessment-midterm" class="block text-sm font-medium text-gray-700 mb-1">期中考试占比
+                    (%)</label>
+                  <input type="number" id="assessment-midterm" name="assessment-midterm" min="0" max="100" required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                    placeholder="请输入期中考试占比">
+                </div>
+
+                <div>
+                  <label for="assessment-final" class="block text-sm font-medium text-gray-700 mb-1">期末考试占比 (%)</label>
+                  <input type="number" id="assessment-final" name="assessment-final" min="0" max="100" required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                    placeholder="请输入期末考试占比">
+                </div>
+              </div>
+
+              <div class="mt-4 text-sm text-gray-500">
+                <p>注意：各项评分占比总和必须为100%</p>
+              </div>
+            </div>
+
+            <!-- 附件上传 -->
+            <div class="bg-gray-50 p-5 rounded-lg">
+              <h3 class="text-lg font-semibold text-gray-800 mb-4">课程资料上传</h3>
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">教学大纲文件</label>
+                  <div
+                    class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-primary transition-colors">
+                    <div class="space-y-1 text-center">
+                      <i class="fa fa-cloud-upload text-3xl text-gray-400"></i>
+                      <div class="flex text-sm text-gray-600">
+                        <label for="syllabus-file"
+                          class="relative cursor-pointer bg-white rounded-md font-medium text-primary hover:text-primary/80">
+                          <span>上传文件</span>
+                          <input id="syllabus-file" name="syllabus-file" type="file" class="sr-only">
+                        </label>
+                        <p class="pl-1">或拖放文件</p>
+                      </div>
+                      <p class="text-xs text-gray-500">
+                        支持PDF, Word, Excel格式，最大20MB
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">推荐教材</label>
+                  <input type="text" id="textbook" name="textbook"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                    placeholder="请输入推荐教材信息">
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">参考资料</label>
+                  <textarea id="references" name="references" rows="2"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                    placeholder="请输入参考资料信息"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- 表单操作按钮 -->
+            <div class="flex justify-end space-x-4">
+              <button type="button" id="cancel-create-btn"
+                class="px-6 py-3 bg-gray-200 text-gray-800 font-medium rounded-lg hover:bg-gray-300 transition-colors">
+                取消
+              </button>
+              <button type="submit"
+                class="px-6 py-3 bg-primary hover:bg-primary/90 text-white font-medium rounded-lg transition-all duration-200 flex items-center">
+                <i class="fa fa-save mr-2"></i> 创建课程
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // 退出登录
+    document.getElementById('teacher-logout-btn').addEventListener('click', function () {
+      if (confirm('确定要退出登录吗？')) {
+        window.location.href = 'login.html';
+      }
+    });
+
+    // 取消创建课程
+    document.getElementById('cancel-create-btn').addEventListener('click', function () {
+      if (confirm('确定要取消创建课程吗？您的更改将不会被保存。')) {
+        window.history.back();
+      }
+    });
+
+    // 创建课程表单提交
+    document.getElementById('create-course-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      // 获取表单数据
+      const formData = new FormData(this);
+      const formValues = Object.fromEntries(formData.entries());
+
+      // 简单验证评分标准总和是否为100%
+      const attendance = parseInt(formValues['assessment-attendance'] || 0);
+      const homework = parseInt(formValues['assessment-homework'] || 0);
+      const midterm = parseInt(formValues['assessment-midterm'] || 0);
+      const final = parseInt(formValues['assessment-final'] || 0);
+
+      if (attendance + homework + midterm + final !== 100) {
+        alert('各项评分占比总和必须为100%');
+        return;
+      }
+
+      // 模拟API调用
+      // 实际应用中，这里应该是一个AJAX请求到后端API
+      alert('课程创建成功！');
+      window.location.href = 'teacher_course_management.html';
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智能选课系统 - 我的课程</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#165DFF',
+            secondary: '#36D399',
+            warning: '#FFAB00',
+            danger: '#F87272',
+            dark: '#1E293B',
+            light: '#F8FAFC'
+          },
+          fontFamily: {
+            inter: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+                      .content-auto {
+                        content-visibility: auto;
+                      }
+                      .card-shadow {
+                        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+                      }
+                      .hover-scale {
+                        transition: transform 0.2s ease-in-out;
+                      }
+                      .hover-scale:hover {
+                        transform: scale(1.02);
+                      }
+                      .progress-bar {
+                        height: 8px;
+                        border-radius: 4px;
+                        background-color: #E5E7EB;
+                      }
+                      .progress-value {
+                        height: 100%;
+                        border-radius: 4px;
+                      }
+                    }
+                  </style>
+</head>
+
+<body class="font-inter bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+  <!-- 顶部导航 -->
+  <header class="bg-primary text-white shadow-md">
+    <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center">
+        <i class="fa fa-graduation-cap text-2xl mr-2"></i>
+        <h1 class="text-xl font-bold">教师面板</h1>
+      </div>
+      <div class="flex items-center">
+        <span id="teacher-name" class="mr-4">王老师</span>
+        <button id="teacher-logout-btn" class="flex items-center text-white hover:text-gray-200 transition-colors">
+          <i class="fa fa-sign-out mr-1"></i> 退出
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主内容区 -->
+  <div class="flex-1 flex">
+    <!-- 侧边栏 -->
+    <aside class="w-64 bg-dark text-white shadow-lg">
+      <nav class="py-4">
+        <div class="px-4 mb-6">
+          <h2 class="text-lg font-semibold text-gray-400 uppercase tracking-wider">教学管理</h2>
+        </div>
+        <ul class="space-y-1">
+          <li>
+            <a href="#"
+              class="nav-link text-gray-300 flex items-center px-4 py-3 hover:bg-primary/20 hover:text-white transition-colors">
+              <i class="fa fa-tachometer w-6 text-center"></i>
+              <span class="ml-2">我的课程</span>
+            </a>
+          </li>
+          <li>
+            <a href="#"
+              class="nav-link text-gray-300 flex items-center px-4 py-3 hover:bg-primary/20 hover:text-white transition-colors">
+              <i class="fa fa-calendar w-6 text-center"></i>
+              <span class="ml-2">教学日历</span>
+            </a>
+          </li>
+          <li>
+            <a href="#"
+              class="nav-link text-gray-300 flex items-center px-4 py-3 hover:bg-primary/20 hover:text-white transition-colors"">
+                  <i class=" fa fa-plus-circle w-6 text-center"></i>
+              <span class="ml-2">创建新课程</span>
+            </a>
+          </li>
+          <li>
+            <a href="#"
+              class="nav-link text-gray-300 flex items-center px-4 py-3 hover:bg-primary/20 hover:text-white transition-colors">
+              <i class="fa fa-users w-6 text-center"></i>
+              <span class="ml-2">学生管理</span>
+            </a>
+          </li>
+          <li>
+            <a href="#"
+              class="nav-link bg-primary/20 text-white flex items-center px-4 py-3 hover:bg-primary/30 transition-colors">
+              <i class="fa fa-pencil-square-o w-6 text-center"></i>
+              <span class="ml-2">成绩管理</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- 主面板 -->
+    <main class="flex-1 p-6 overflow-auto">
+      <div class="container mx-auto">
+        <!-- 页面标题 -->
+        <div class="mb-8">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h2 class="text-2xl font-bold text-gray-800 mb-2">成绩录入</h2>
+              <p class="text-gray-600">管理和录入学生成绩</p>
+            </div>
+            <div>
+              <div class="flex items-center space-x-4">
+                <button
+                  class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center"
+                  id="save-all-btn">
+                  <i class="fa fa-save mr-2"></i> 保存所有
+                </button>
+                <button
+                  class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors flex items-center">
+                  <i class="fa fa-upload mr-2"></i> 导入成绩
+                </button>
+                <button
+                  class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors flex items-center">
+                  <i class="fa fa-download mr-2"></i> 导出成绩
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 课程和学期选择 -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8 border border-gray-200">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+              <label for="grade-course-select" class="block text-sm font-medium text-gray-700 mb-1">选择课程</label>
+              <select id="grade-course-select"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                <option value="">--请选择课程--</option>
+                <option value="1">数据结构 (2025-2026学年第一学期)</option>
+                <option value="2">高等数学 (2025-2026学年第一学期)</option>
+                <option value="3">人工智能基础 (2025-2026学年第一学期)</option>
+                <option value="4">大学物理 (2025-2026学年第一学期)</option>
+              </select>
+            </div>
+            <div>
+              <label for="grade-semester-select" class="block text-sm font-medium text-gray-700 mb-1">选择学期</label>
+              <select id="grade-semester-select"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                <option value="">--请选择学期--</option>
+                <option value="2025-2026-1">2025-2026学年第一学期</option>
+                <option value="2025-2026-2">2025-2026学年第二学期</option>
+                <option value="2026-2027-1">2026-2027学年第一学期</option>
+                <option value="2026-2027-2">2026-2027学年第二学期</option>
+              </select>
+            </div>
+            <div>
+              <label for="grade-status-select" class="block text-sm font-medium text-gray-700 mb-1">成绩状态</label>
+              <select id="grade-status-select"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                <option value="all">全部学生</option>
+                <option value="unsubmitted">未提交成绩</option>
+                <option value="submitted">已提交成绩</option>
+                <option value="modified">已修改成绩</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- 评分标准 -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8 border border-gray-200">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-800">评分标准</h3>
+            <button class="text-primary hover:text-primary/80 text-sm flex items-center" id="edit-criteria-btn">
+              <i class="fa fa-edit mr-1"></i> 修改标准
+            </button>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="bg-gray-50 p-4 rounded-lg hover-scale">
+              <div class="flex justify-between items-center">
+                <h4 class="text-sm font-medium text-gray-500 mb-1">考勤占比</h4>
+                <span class="px-2 py-1 bg-primary/10 text-primary rounded text-xs font-medium">20%</span>
+              </div>
+              <div class="progress-bar mt-2">
+                <div class="progress-value bg-primary" style="width: 20%"></div>
+              </div>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-lg hover-scale">
+              <div class="flex justify-between items-center">
+                <h4 class="text-sm font-medium text-gray-500 mb-1">作业占比</h4>
+                <span class="px-2 py-1 bg-secondary/10 text-secondary rounded text-xs font-medium">30%</span>
+              </div>
+              <div class="progress-bar mt-2">
+                <div class="progress-value bg-secondary" style="width: 30%"></div>
+              </div>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-lg hover-scale">
+              <div class="flex justify-between items-center">
+                <h4 class="text-sm font-medium text-gray-500 mb-1">期中考试</h4>
+                <span class="px-2 py-1 bg-warning/10 text-warning rounded text-xs font-medium">20%</span>
+              </div>
+              <div class="progress-bar mt-2">
+                <div class="progress-value bg-warning" style="width: 20%"></div>
+              </div>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-lg hover-scale">
+              <div class="flex justify-between items-center">
+                <h4 class="text-sm font-medium text-gray-500 mb-1">期末考试</h4>
+                <span class="px-2 py-1 bg-danger/10 text-danger rounded text-xs font-medium">30%</span>
+              </div>
+              <div class="progress-bar mt-2">
+                <div class="progress-value bg-danger" style="width: 30%"></div>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4 text-sm text-gray-500">
+            <p>总评成绩 = 考勤成绩 × 20% + 作业成绩 × 30% + 期中考试成绩 × 20% + 期末考试成绩 × 30%</p>
+          </div>
+        </div>
+
+        <!-- 成绩录入表格 -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden mb-8 border border-gray-200">
+          <div class="p-4 border-b border-gray-200 bg-gray-50">
+            <div class="flex justify-between items-center">
+              <h3 class="font-medium text-gray-900">学生成绩列表</h3>
+              <div class="text-sm text-gray-500">
+                <span id="completed-count">2</span> / <span id="total-count">5</span> 学生已完成
+              </div>
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 table-shadow">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <div class="flex items-center">
+                      <input type="checkbox" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+                    </div>
+                  </th>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <div class="flex items-center">
+                      学号
+                      <i class="fa fa-sort ml-1 text-gray-400"></i>
+                    </div>
+                  </th>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <div class="flex items-center">
+                      姓名
+                      <i class="fa fa-sort ml-1 text-gray-400"></i>
+                    </div>
+                  </th>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <div class="flex items-center">
+                      考勤成绩 (20%)
+                      <i class="fa fa-sort ml-1 text-gray-400"></i>
+                    </div>
+                  </th>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <div class="flex items-center">
+                      作业成绩 (30%)
+                      <i class="fa fa-sort ml-1 text-gray-400"></i>
+                    </div>
+                  </th>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <div class="flex items-center">
+                      期中成绩 (20%)
+                      <i class="fa fa-sort ml-1 text-gray-400"></i>
+                    </div>
+                  </th>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <div class="flex items-center">
+                      期末成绩 (30%)
+                      <i class="fa fa-sort ml-1 text-gray-400"></i>
+                    </div>
+                  </th>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <div class="flex items-center">
+                      总评成绩
+                      <i class="fa fa-sort ml-1 text-gray-400"></i>
+                    </div>
+                  </th>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <div class="flex items-center">
+                      状态
+                      <i class="fa fa-sort ml-1 text-gray-400"></i>
+                    </div>
+                  </th>
+                  <th scope="col"
+                    class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    操作
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200" id="grade-table-body">
+                <tr class="hover:bg-gray-50 transition-colors">
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <input type="checkbox" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900">2023001001</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <div class="flex-shrink-0 h-10 w-10">
+                        <img class="h-10 w-10 rounded-full" src="https://picsum.photos/200/200?random=1" alt="学生头像">
+                      </div>
+                      <div class="ml-4">
+                        <div class="text-sm font-medium text-gray-900">张三</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <input type="number" min="0" max="100" value="90" class="score-input grade-input"
+                      data-type="attendance">
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <input type="number" min="0" max="100" value="85" class="score-input grade-input"
+                      data-type="homework">
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <input type="number" min="0" max="100" value="88" class="score-input grade-input"
+                      data-type="midterm">
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <input type="number" min="0" max="100" class="score-input grade-input" data-type="final"
+                      data-editing="true">
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900 grade-final">未计算</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span
+                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 grade-status">
+                      未完成
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <button class="text-primary hover:text-primary/80 save-grade-btn" disabled>
+                      <i class="fa fa-save"></i> 保存
+                    </button>
+                  </td>
+                </tr>
+                <tr class="hover:bg-gray-50 transition-colors">
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <input type="checkbox" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900">2023001002</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <div class="flex-shrink-0 h-10 w-10">
+                        <img class="h-10 w-10 rounded-full" src="https://picsum.photos/200/200?random=2" alt="学生头像">
+                      </div>
+                      <div class="ml-4">
+                        <div class="text-sm font-medium text-gray-900">李四</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <input type="number" min="0" max="100" value="95" class="score-input grade-input"
+                      data-type="attendance" disabled>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <input type="number" min="0" max="100" value="92" class="score-input grade-input"
+                      data-type="homework" disabled>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <input type="number" min="0" max="100" value="87" class="score-input grade-input"
+                      data-type="midterm" disabled>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <input type="number" min="0" max="100" value="94" class="score-input grade-input" data-type="final"
+                      disabled>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-green-600 grade-final">91.3</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span
+                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 grade-status">
+                      已完成
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <button class="text-gray-400 cursor-not-allowed" disabled>
+                      <i class="fa fa-check"></i> 已保存
+                    </button>
+                  </td>
+                </tr>
+                <tr class="hover:bg-gray-50 transition-colors">
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <input type="checkbox" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900">2023001003</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <div class="flex-shrink-0 h-10 w-10">
+                        <img class="h-10 w-10 rounded-full" src="https://picsum.photos/200/200?random=3" alt="学生头像">
+                      </div>
+                      <div class="ml-4">
+                        <div class="text-sm font-medium text-gray-900">王五</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <input type="number" min="0" max="100" value="80" class="score-input grade-input"
+                      data-type="attendance">
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <input type="number" min="0" max="100" value="75" class="score-input grade-input"
+                      data-type="homework">
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <input type="number" min="0" max="100" value="82" class="score-input grade-input"
+                      data-type="midterm">
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <input type="number" min="0" max="100" class="score-input grade-input" data-type="final"
+                      data-editing="true">
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900 grade-final">未计算</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span
+                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 grade-status">
+                      未完成
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <button class="text-primary hover:text-primary/80 save-grade-btn" disabled>
+                      <i class="fa fa-save"></i> 保存
+                    </button>
+                  </td>
+                </tr>
+                <tr class="hover:bg-gray-50 transition-colors">
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <input type="checkbox" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900">2023001004</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <div class="flex-shrink-0 h-10 w-10">
+                        <img class="h-10 w-10 rounded-full" src="https://picsum.photos/200/200?random=4" alt="学生头像">
+                      </div>
+                      <div class="ml-4">
+                        <div class="text-sm font-medium text-gray-900">赵六</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <input type="number" min="0" max="100" value="78" class="score-input grade-input"
+                      data-type="attendance" disabled>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <input type="number" min="0" max="100" value="83" class="score-input grade-input"
+                      data-type="homework" disabled>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <input type="number" min="0" max="100" value="85" class="score-input grade-input"
+                      data-type="midterm" disabled>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <input type="number" min="0" max="100" value="79" class="score-input grade-input" data-type="final"
+                      disabled>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-green-600 grade-final">81.4</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span
+                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 grade-status">
+                      已完成
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <button class="text-gray-400 cursor-not-allowed" disabled>
+                      <i class="fa fa-check"></i> 已保存
+                    </button>
+                  </td>
+                </tr>
+                <tr class="hover:bg-gray-50 transition-colors">
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <input type="checkbox" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900">2023001005</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <div class="flex-shrink-0 h-10 w-10">
+                        <img class="h-10 w-10 rounded-full" src="https://picsum.photos/200/200?random=5" alt="学生头像">
+                      </div>
+                      <div class="ml-4">
+                        <div class="text-sm font-medium text-gray-900">孙七</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <input type="number" min="0" max="100" value="92" class="score-input grade-input"
+                      data-type="attendance">
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <input type="number" min="0" max="100" value="88" class="score-input grade-input"
+                      data-type="homework">
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <input type="number" min="0" max="100" class="score-input grade-input" data-type="midterm"
+                      data-editing="true">
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <input type="number" min="0" max="100" class="score-input grade-input" data-type="final"
+                      data-editing="true">
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900 grade-final">未计算</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span
+                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 grade-status">
+                      未完成
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <button class="text-primary hover:text-primary/80 save-grade-btn" disabled>
+                      <i class="fa fa-save"></i> 保存
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- 分页 -->
+          <div class="px-6 py-4 bg-white border-t border-gray-200 flex items-center justify-between">
+            <div class="flex-1 flex justify-between sm:hidden">
+              <a href="#"
+                class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                上一页
+              </a>
+              <a href="#"
+                class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                下一页
+              </a>
+            </div>
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+              <div>
+                <p class="text-sm text-gray-700">
+                  显示第 <span class="font-medium">1</span> 到 <span class="font-medium">5</span> 条，共 <span
+                    class="font-medium">24</span> 条记录
+                </p>
+              </div>
+              <div>
+                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                  <a href="#"
+                    class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                    <span class="sr-only">上一页</span>
+                    <i class="fa fa-chevron-left"></i>
+                  </a>
+                  <a href="#" aria-current="page"
+                    class="z-10 bg-primary text-white relative inline-flex items-center px-4 py-2 border border-primary text-sm font-medium">
+                    1
+                  </a>
+                  <a href="#"
+                    class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                    2
+                  </a>
+                  <a href="#"
+                    class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                    3
+                  </a>
+                  <span
+                    class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                    ...
+                  </span>
+                  <a href="#"
+                    class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                    5
+                  </a>
+                  <a href="#"
+                    class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                    <span class="sr-only">下一页</span>
+                    <i class="fa fa-chevron-right"></i>
+                  </a>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 操作按钮 -->
+        <div class="flex justify-end space-x-4">
+          <button class="px-6 py-3 bg-gray-200 text-gray-800 font-medium rounded-lg hover:bg-gray-300 transition-colors"
+            id="reset-all-btn">
+            重置所有成绩
+          </button>
+          <button
+            class="px-6 py-3 bg-primary hover:bg-primary/90 text-white font-medium rounded-lg transition-all duration-200 flex items-center"
+            id="submit-all-btn">
+            <i class="fa fa-check mr-2"></i> 提交所有成绩
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // 退出登录
+    document.getElementById('teacher-logout-btn').addEventListener('click', function () {
+      if (confirm('确定要退出登录吗？')) {
+        window.location.href = 'login.html';
+      }
+    });
+
+    // 课程和学期选择
+    document.getElementById('grade-course-select').addEventListener('change', function () {
+      const selectedCourse = this.value;
+      if (selectedCourse) {
+        alert(`加载 ${this.options[this.selectedIndex].text} 的学生成绩...`);
+      }
+    });
+
+    document.getElementById('grade-semester-select').addEventListener('change', function () {
+      const selectedSemester = this.value;
+      if (selectedSemester) {
+        alert(`筛选 ${selectedSemester} 的学生成绩...`);
+      }
+    });
+
+    // 修改评分标准
+    document.getElementById('edit-criteria-btn').addEventListener('click', function () {
+      alert('打开评分标准设置页面...');
+    });
+
+    // 成绩输入验证
+    document.querySelectorAll('.grade-input').forEach(input => {
+      input.addEventListener('input', function () {
+        const value = parseInt(this.value);
+
+        // 验证输入是否为0-100之间的数字
+        if (isNaN(value) || value < 0 || value > 100) {
+          this.classList.add('score-invalid');
+          this.classList.remove('score-valid');
+        } else {
+          this.classList.remove('score-invalid');
+          this.classList.add('score-valid');
+        }
+
+        // 检查是否所有必要的成绩都已输入
+        updateSaveButton(this.closest('tr'));
+
+        // 计算总评成绩
+        calculateFinalScore(this.closest('tr'));
+
+        // 更新完成计数
+        updateCompletionCount();
+      });
+    });
+
+    // 更新保存按钮状态
+    function updateSaveButton(row) {
+      const inputs = row.querySelectorAll('.grade-input');
+      const saveButton = row.querySelector('.save-grade-btn');
+      let allValid = true;
+      let anyEditing = false;
+
+      inputs.forEach(input => {
+        if (input.classList.contains('score-invalid') || input.value === '') {
+          allValid = false;
+        }
+
+        if (input.hasAttribute('data-editing')) {
+          anyEditing = true;
+        }
+      });
+
+      if (allValid && anyEditing) {
+        saveButton.removeAttribute('disabled');
+      } else {
+        saveButton.setAttribute('disabled', 'disabled');
+      }
+    }
+
+    // 计算总评成绩
+    function calculateFinalScore(row) {
+      const attendance = parseFloat(row.querySelector('td:nth-child(4) input').value) || 0;
+      const homework = parseFloat(row.querySelector('td:nth-child(5) input').value) || 0;
+      const midterm = parseFloat(row.querySelector('td:nth-child(6) input').value) || 0;
+      const final = parseFloat(row.querySelector('td:nth-child(7) input').value) || 0;
+
+      // 检查是否所有必要的成绩都已输入
+      const allScoresEntered =
+        (row.querySelector('td:nth-child(4) input').value !== '') &&
+        (row.querySelector('td:nth-child(5) input').value !== '') &&
+        (row.querySelector('td:nth-child(6) input').value !== '') &&
+        (row.querySelector('td:nth-child(7) input').value !== '');
+
+      if (allScoresEntered) {
+        // 根据评分标准计算总评成绩
+        const finalScore = (attendance * 0.2) + (homework * 0.3) + (midterm * 0.2) + (final * 0.3);
+
+        // 更新总评成绩
+        const finalScoreElement = row.querySelector('.grade-final');
+        finalScoreElement.textContent = finalScore.toFixed(1);
+        finalScoreElement.className = 'text-sm font-medium text-green-600 grade-final';
+
+        // 更新状态
+        const statusElement = row.querySelector('.grade-status');
+        statusElement.className = 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 grade-status';
+        statusElement.textContent = '已完成';
+      } else {
+        // 有成绩未输入，重置总评成绩
+        const finalScoreElement = row.querySelector('.grade-final');
+        finalScoreElement.textContent = '未计算';
+        finalScoreElement.className = 'text-sm font-medium text-gray-900 grade-final';
+
+        // 更新状态
+        const statusElement = row.querySelector('.grade-status');
+        statusElement.className = 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 grade-status';
+        statusElement.textContent = '未完成';
+      }
+    }
+
+    // 更新完成计数
+    function updateCompletionCount() {
+      const rows = document.querySelectorAll('#grade-table-body tr');
+      let completedCount = 0;
+
+      rows.forEach(row => {
+        const statusElement = row.querySelector('.grade-status');
+        if (statusElement && statusElement.textContent.trim() === '已完成') {
+          completedCount++;
+        }
+      });
+
+      document.getElementById('completed-count').textContent = completedCount;
+    }
+
+    // 保存单个学生成绩
+    document.querySelectorAll('.save-grade-btn').forEach(button => {
+      button.addEventListener('click', function () {
+        const row = this.closest('tr');
+        const studentId = row.querySelector('td:nth-child(2) div').textContent;
+        const studentName = row.querySelector('td:nth-child(3) div:last-child').                    < div class="text-sm font-medium text-gray-900" > 孙七</div >
+                  </div >
+                </div >
+              </td >
+              <td class="px-6 py-4 whitespace-nowrap">
+                <input type="number" min="0" max="100" value="92" class="score-input grade-input" data-type="attendance">
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <input type="number" min="0" max="100" value="88" class="score-input grade-input" data-type="homework">
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <input type="number" min="0" max="100" class="score-input grade-input" data-type="midterm" data-editing="true">
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <input type="number" min="0" max="100" class="score-input grade-input" data-type="final" data-editing="true">
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-medium text-gray-900 grade-final">未计算</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 grade-status">
+                  未完成
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <button class="text-primary hover:text-primary/80 save-grade-btn" disabled>
+                  <i class="fa fa-save"></i> 保存
+                </button>
+              </td>
+            </tr >
+          </tbody >
+        </table >
+      </div >
+
+          <!-- 分页 -->
+          <div class="px-6 py-4 bg-white border-t border-gray-200 flex items-center justify-between">
+            <div class="flex-1 flex justify-between sm:hidden">
+              <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                上一页
+              </a>
+              <a href="#" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                下一页
+              </a>
+            </div>
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+              <div>
+                <p class="text-sm text-gray-700">
+                  显示第 <span class="font-medium">1</span> 到 <span class="font-medium">5</span> 条，共 <span class="font-medium">24</span> 条记录
+                </p>
+              </div>
+              <div>
+                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                  <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                    <span class="sr-only">上一页</span>
+                    <i class="fa fa-chevron-left"></i>
+                  </a>
+                  <a href="#" aria-current="page" class="z-10 bg-primary text-white relative inline-flex items-center px-4 py-2 border border-primary text-sm font-medium">
+                    1
+                  </a>
+                  <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                    2
+                  </a>
+                  <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                    3
+                  </a>
+                  <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                    ...
+                  </span>
+                  <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                    5
+                  </a>
+                  <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                    <span class="sr-only">下一页</span>
+                    <i class="fa fa-chevron-right"></i>
+                  </a>
+                </nav>
+              </div>
+            </div>
+          </div>
+    </div >
+    
+    < !--操作按钮 -->
+          <div class="flex justify-end space-x-4">
+            <button class="px-6 py-3 bg-gray-200 text-gray-800 font-medium rounded-lg hover:bg-gray-300 transition-colors" id="reset-all-btn">
+              重置所有成绩
+            </button>
+            <button class="px-6 py-3 bg-primary hover:bg-primary/90 text-white font-medium rounded-lg transition-all duration-200 flex items-center" id="submit-all-btn">
+              <i class="fa fa-check mr-2"></i> 提交所有成绩
+            </button>
+          </div>
+  </div >
+</main >
+</div >
+
+          <script>
+// 退出登录
+            document.getElementById('teacher-logout-btn').addEventListener('click', function() {
+  if (confirm('确定要退出登录吗？')) {
+              window.location.href = 'login.html';
+  }
+});
+
+            // 课程和学期选择
+            document.getElementById('grade-course-select').addEventListener('change', function() {
+  const selectedCourse = this.value;
+            if (selectedCourse) {
+              alert(`加载 ${this.options[this.selectedIndex].text} 的学生成绩...`);
+  }
+});
+
+            document.getElementById('grade-semester-select').addEventListener('change', function() {
+  const selectedSemester = this.value;
+            if (selectedSemester) {
+              alert(`筛选 ${selectedSemester} 的学生成绩...`);
+  }
+});
+
+            // 修改评分标准
+            document.getElementById('edit-criteria-btn').addEventListener('click', function() {
+              alert('打开评分标准设置页面...');
+});
+
+// 成绩输入验证
+document.querySelectorAll('.grade-input').forEach(input => {
+              input.addEventListener('input', function () {
+                const value = parseInt(this.value);
+
+                // 验证输入是否为0-100之间的数字
+                if (isNaN(value) || value < 0 || value > 100) {
+                  this.classList.add('score-invalid');
+                  this.classList.remove('score-valid');
+                } else {
+                  this.classList.remove('score-invalid');
+                  this.classList.add('score-valid');
+                }
+
+                // 检查是否所有必要的成绩都已输入
+                updateSaveButton(this.closest('tr'));
+
+                // 计算总评成绩
+                calculateFinalScore(this.closest('tr'));
+
+                // 更新完成计数
+                updateCompletionCount();
+              });
+});
+
+            // 更新保存按钮状态
+            function updateSaveButton(row) {
+  const inputs = row.querySelectorAll('.grade-input');
+            const saveButton = row.querySelector('.save-grade-btn');
+            let allValid = true;
+            let anyEditing = false;
+  
+  inputs.forEach(input => {
+    if (input.classList.contains('score-invalid') || input.value === '') {
+              allValid = false;
+    }
+
+            if (input.hasAttribute('data-editing')) {
+              anyEditing = true;
+    }
+  });
+
+            if (allValid && anyEditing) {
+              saveButton.removeAttribute('disabled');
+  } else {
+              saveButton.setAttribute('disabled', 'disabled');
+  }
+}
+
+            // 计算总评成绩
+            function calculateFinalScore(row) {
+  const attendance = parseFloat(row.querySelector('td:nth-child(4) input').value) || 0;
+            const homework = parseFloat(row.querySelector('td:nth-child(5) input').value) || 0;
+            const midterm = parseFloat(row.querySelector('td:nth-child(6) input').value) || 0;
+            const final = parseFloat(row.querySelector('td:nth-child(7) input').value) || 0;
+
+            // 检查是否所有必要的成绩都已输入
+            const allScoresEntered =
+            (row.querySelector('td:nth-child(4) input').value !== '') &&
+            (row.querySelector('td:nth-child(5) input').value !== '') &&
+            (row.querySelector('td:nth-child(6) input').value !== '') &&
+            (row.querySelector('td:nth-child(7) input').value !== '');
+
+            if (allScoresEntered) {
+    // 根据评分标准计算总评成绩
+    const finalScore = (attendance * 0.2) + (homework * 0.3) + (midterm * 0.2) + (final * 0.3);
+
+            // 更新总评成绩
+            const finalScoreElement = row.querySelector('.grade-final');
+            finalScoreElement.textContent = finalScore.toFixed(1);
+            finalScoreElement.className = 'text-sm font-medium text-green-600 grade-final';
+
+            // 更新状态
+            const statusElement = row.querySelector('.grade-status');
+            statusElement.className = 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 grade-status';
+            statusElement.textContent = '已完成';
+  } else {
+    // 有成绩未输入，重置总评成绩
+    const finalScoreElement = row.querySelector('.grade-final');
+            finalScoreElement.textContent = '未计算';
+            finalScoreElement.className = 'text-sm font-medium text-gray-900 grade-final';
+
+            // 更新状态
+            const statusElement = row.querySelector('.grade-status');
+            statusElement.className = 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 grade-status';
+            statusElement.textContent = '未完成';
+  }
+}
+
+            // 更新完成计数
+            function updateCompletionCount() {
+  const rows = document.querySelectorAll('#grade-table-body tr');
+            let completedCount = 0;
+  
+  rows.forEach(row => {
+    const statusElement = row.querySelector('.grade-status');
+            if (statusElement && statusElement.textContent.trim() === '已完成') {
+              completedCount++;
+    }
+  });
+
+            document.getElementById('completed-count').textContent = completedCount;
+}
+
+// 保存单个学生成绩
+document.querySelectorAll('.save-grade-btn').forEach(button => {
+              button.addEventListener('click', function () {
+                const row = this.closest('tr');
+                const studentId = row.querySelector('td:nth-child(2) div').textContent;
+                const studentName = row.querySelector('td:nth-child(3) div:last-child').textContent;
+
+                // 模拟保存成绩
+                const attendance = row.querySelector('td:nth-child(4) input').value;
+                const homework = row.querySelector('td:nth-child(5) input').value;
+                const midterm = row.querySelector('td:nth-child(6) input').value;
+                const final = row.querySelector('td:nth-child(7) input').value;
+
+                console.log(`保存 ${studentName} (${studentId}) 的成绩:`, {
+                  attendance,
+                  homework,
+                  midterm,
+                  final
+                });
+
+                // 禁用输入框
+                row.querySelectorAll('.grade-input[data-editing]').forEach(input => {
+                  input.removeAttribute('data-editing');
+                  input.disabled = true;
+                });
+
+                // 更新按钮状态
+                this.innerHTML = '<i class="fa fa-check"></i> 已保存';
+                this.className = 'text-gray-400 cursor-not-allowed';
+                this.disabled = true;
+
+                // 显示成功提示
+                const notification = document.createElement('div');
+                notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg z-50';
+                notification.textContent = `已成功保存 ${studentName} 的成绩`;
+                document.body.appendChild(notification);
+
+                // 3秒后自动消失
+                setTimeout(() => {
+                  notification.style.opacity = '0';
+                  notification.style.transition = 'opacity 0.5s';
+                  setTimeout(() => {
+                    document.body.removeChild(notification);
+                  }, 500);
+                }, 3000);
+
+                // 更新完成计数
+                updateCompletionCount();
+              });
+});
+
+            // 保存所有成绩
+            document.getElementById('save-all-btn').addEventListener('click', function() {
+  const editableRows = document.querySelectorAll('#grade-table-body tr .save-grade-btn:not([disabled])');
+
+            if (editableRows.length === 0) {
+              alert('没有需要保存的成绩');
+            return;
+  }
+
+            if (confirm('确定要保存所有修改的成绩吗？')) {
+              // 模拟保存所有成绩
+              editableRows.forEach(button => {
+                button.click(); // 调用单个保存逻辑
+              });
+
+            // 显示成功提示
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg z-50';
+            notification.textContent = '已成功保存所有学生的成绩';
+            document.body.appendChild(notification);
+
+    // 3秒后自动消失
+    setTimeout(() => {
+              notification.style.opacity = '0';
+            notification.style.transition = 'opacity 0.5s';
+      setTimeout(() => {
+              document.body.removeChild(notification);
+      }, 500);
+    }, 3000);
+  }
+});
+
+            // 重置所有成绩
+            document.getElementById('reset-all-btn').addEventListener('click', function() {
+  if (confirm('确定要重置所有成绩吗？这将清除所有未保存的修改！')) {
+              // 重新加载页面模拟重置
+              location.reload();
+  }
+});
+
+            // 提交所有成绩
+            document.getElementById('submit-all-btn').addEventListener('click', function() {
+  const rows = document.querySelectorAll('#grade-table-body tr');
+            let allCompleted = true;
+
+  // 检查是否所有学生成绩都已完成
+  rows.forEach(row => {
+    const statusElement = row.querySelector('.grade-status');
+            if (!statusElement || statusElement.textContent.trim() !== '已完成') {
+              allCompleted = false;
+    }
+  });
+
+            if (!allCompleted) {
+              alert('请先完成所有学生的成绩录入');
+            return;
+  }
+
+            if (confirm('确定要提交所有成绩吗？提交后将无法修改！')) {
+              // 模拟提交所有成绩
+              console.log('提交所有成绩...');
+
+            // 显示成功提示
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-blue-500 text-white px-4 py-2 rounded shadow-lg z-50';
+            notification.textContent = '已成功提交所有学生的成绩';
+            document.body.appendChild(notification);
+
+    // 3秒后自动消失
+    setTimeout(() => {
+              notification.style.opacity = '0';
+            notification.style.transition = 'opacity 0.5s';
+      setTimeout(() => {
+              document.body.removeChild(notification);
+      }, 500);
+    }, 3000);
+  }
+});
+  </script>
+</body>
+
+</html>

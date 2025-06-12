@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智能选课系统 - 管理员面板</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#165DFF',
+            secondary: '#36D399',
+            warning: '#FFAB00',
+            danger: '#F87272',
+            dark: '#1E293B',
+            light: '#F8FAFC'
+          },
+          fontFamily: {
+            inter: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .card-shadow {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      }
+      .hover-scale {
+        transition: transform 0.2s ease-in-out;
+      }
+      .hover-scale:hover {
+        transform: scale(1.02);
+      }
+    }
+  </style>
+</head>
+
+<body class="font-inter bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+  <!-- 顶部导航 -->
+  <header class="bg-primary text-white shadow-md">
+    <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center">
+        <i class="fa fa-user-circle-o text-2xl mr-2"></i>
+        <h1 class="text-xl font-bold">管理员面板</h1>
+      </div>
+      <div class="flex items-center">
+        <span id="admin-name" class="mr-4">管理员: 张老师</span>
+        <button id="logout-btn" class="flex items-center text-white hover:text-gray-200 transition-colors">
+          <i class="fa fa-sign-out mr-1"></i> 退出
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主内容区 -->
+  <div class="flex-1 flex">
+    <!-- 侧边栏 -->
+    <aside class="w-64 bg-dark text-white shadow-lg">
+      <nav class="py-4">
+        <div class="px-4 mb-6">
+          <h2 class="text-lg font-semibold text-gray-400 uppercase tracking-wider">系统管理</h2>
+        </div>
+        <ul class="space-y-1">
+          <li>
+            <a href="#"
+              class="nav-link bg-primary/20 text-white flex items-center px-4 py-3 hover:bg-primary/30 transition-colors">
+              <i class="fa fa-tachometer w-6 text-center"></i>
+              <span class="ml-2">控制台</span>
+            </a>
+          </li>
+          <li>
+            <a href="#"
+              class="nav-link text-gray-300 flex items-center px-4 py-3 hover:bg-primary/20 hover:text-white transition-colors">
+              <i class="fa fa-users w-6 text-center"></i>
+              <span class="ml-2">用户管理</span>
+            </a>
+          </li>
+          <li>
+            <a href="#"
+              class="nav-link text-gray-300 flex items-center px-4 py-3 hover:bg-primary/20 hover:text-white transition-colors">
+              <i class="fa fa-book w-6 text-center"></i>
+              <span class="ml-2">课程管理</span>
+            </a>
+          </li>
+          <li>
+            <a href="#"
+              class="nav-link text-gray-300 flex items-center px-4 py-3 hover:bg-primary/20 hover:text-white transition-colors">
+              <i class="fa fa-calendar-check-o w-6 text-center"></i>
+              <span class="ml-2">选课审核</span>
+            </a>
+          </li>
+          <li>
+            <a href="#"
+              class="nav-link text-gray-300 flex items-center px-4 py-3 hover:bg-primary/20 hover:text-white transition-colors">
+              <i class="fa fa-history w-6 text-center"></i>
+              <span class="ml-2">操作日志</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- 主面板 -->
+    <main class="flex-1 p-6 overflow-auto">
+      <div class="container mx-auto">
+        <!-- 欢迎信息 -->
+        <div class="mb-8">
+          <h2 class="text-2xl font-bold text-gray-800 mb-2">欢迎回来，张老师</h2>
+          <p class="text-gray-600">今天是 <span id="current-date">2025年6月4日</span>，星期三</p>
+        </div>
+
+        <!-- 数据概览卡片 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div class="bg-white rounded-xl shadow-md p-6 hover-scale">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-500 text-sm font-medium">总学生数</p>
+                <h3 class="text-3xl font-bold text-gray-800 mt-1">2,845</h3>
+                <p class="text-green-500 text-sm mt-2">
+                  <i class="fa fa-arrow-up"></i> 较上月增长 5.2%
+                </p>
+              </div>
+              <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                <i class="fa fa-users text-primary text-xl"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl shadow-md p-6 hover-scale">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-500 text-sm font-medium">总教师数</p>
+                <h3 class="text-3xl font-bold text-gray-800 mt-1">156</h3>
+                <p class="text-green-500 text-sm mt-2">
+                  <i class="fa fa-arrow-up"></i> 较上月增长 2.1%
+                </p>
+              </div>
+              <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+                <i class="fa fa-user-circle-o text-green-600 text-xl"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl shadow-md p-6 hover-scale">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-500 text-sm font-medium">开设课程</p>
+                <h3 class="text-3xl font-bold text-gray-800 mt-1">328</h3>
+                <p class="text-green-500 text-sm mt-2">
+                  <i class="fa fa-arrow-up"></i> 较上月增长 8.7%
+                </p>
+              </div>
+              <div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
+                <i class="fa fa-book text-purple-600 text-xl"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl shadow-md p-6 hover-scale">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-500 text-sm font-medium">选课申请</p>
+                <h3 class="text-3xl font-bold text-gray-800 mt-1">12,543</h3>
+                <p class="text-red-500 text-sm mt-2">
+                  <i class="fa fa-arrow-down"></i> 待处理: 245
+                </p>
+              </div>
+              <div class="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center">
+                <i class="fa fa-calendar-check-o text-orange-600 text-xl"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 待处理申请 -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-bold text-gray-800">待处理申请</h3>
+            <button class="text-primary hover:text-primary/80 text-sm font-medium">查看全部</button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">申请ID</th>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">类型</th>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">申请人</th>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">申请时间</th>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
+                  <th scope="col"
+                    class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr class="hover:bg-gray-50 transition-colors">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">AP20250601</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">课程添加</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">李教授</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2025-06-01 09:32</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span
+                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">待审核</span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <a href="#" class="text-primary hover:text-primary/80">查看</a>
+                  </td>
+                </tr>
+                <tr class="hover:bg-gray-50 transition-colors">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">AP20250602</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">课程修改</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">王老师</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2025-06-02 14:15</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span
+                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">待审核</span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <a href="#" class="text-primary hover:text-primary/80">查看</a>
+                  </td>
+                </tr>
+                <tr class="hover:bg-gray-50 transition-colors">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">AP20250603</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">学生注册</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">赵同学</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2025-06-03 16:47</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span
+                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">待审核</span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <a href="#" class="text-primary hover:text-primary/80">查看</a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 系统状态 -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="bg-white rounded-xl shadow-md p-6">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">课程状态统计</h3>
+            <div class="space-y-4">
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-sm font-medium text-gray-700">已发布课程</span>
+                  <span class="text-sm font-medium text-gray-900">215</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-green-600 h-2 rounded-full" style="width: 65%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-sm font-medium text-gray-700">待审核课程</span>
+                  <span class="text-sm font-medium text-gray-900">42</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-yellow-500 h-2 rounded-full" style="width: 13%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-sm font-medium text-gray-700">已关闭课程</span>
+                  <span class="text-sm font-medium text-gray-900">71</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-gray-500 h-2 rounded-full" style="width: 22%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl shadow-md p-6">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">选课热度排行</h3>
+            <div class="space-y-4">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                  <span class="text-primary font-bold">1</span>
+                </div>
+                <div class="ml-3 flex-1">
+                  <div class="flex items-center justify-between">
+                    <h4 class="text-sm font-medium text-gray-900">人工智能基础</h4>
+                    <span class="text-xs font-medium text-green-600">已满</span>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-1.5 mt-1">
+                    <div class="bg-primary h-1.5 rounded-full" style="width: 100%"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center">
+                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                  <span class="text-primary font-bold">2</span>
+                </div>
+                <div class="ml-3 flex-1">
+                  <div class="flex items-center justify-between">
+                    <h4 class="text-sm font-medium text-gray-900">大数据分析</h4>
+                    <span class="text-xs font-medium text-yellow-600">剩余5人</span>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-1.5 mt-1">
+                    <div class="bg-primary h-1.5 rounded-full" style="width: 90%"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center">
+                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                  <span class="text-primary font-bold">3</span>
+                </div>
+                <div class="ml-3 flex-1">
+                  <div class="flex items-center justify-between">
+                    <h4 class="text-sm font-medium text-gray-900">区块链技术</h4>
+                    <span class="text-xs font-medium text-green-600">已满</span>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-1.5 mt-1">
+                    <div class="bg-primary h-1.5 rounded-full" style="width: 100%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl shadow-md p-6">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">系统通知</h3>
+            <div class="space-y-4">
+              <div class="p-3 bg-blue-50 rounded-lg border border-blue-100">
+                <div class="flex">
+                  <div class="flex-shrink-0">
+                    <i class="fa fa-bell text-primary"></i>
+                  </div>
+                  <div class="ml-3">
+                    <h4 class="text-sm font-medium text-blue-800">学期末数据备份提醒</h4>
+                    <p class="text-xs text-blue-700 mt-1">请于6月15日前完成本学期数据备份工作</p>
+                  </div>
+                </div>
+              </div>
+              <div class="p-3 bg-green-50 rounded-lg border border-green-100">
+                <div class="flex">
+                  <div class="flex-shrink-0">
+                    <i class="fa fa-check-circle text-green-600"></i>
+                  </div>
+                  <div class="ml-3">
+                    <h4 class="text-sm font-medium text-green-800">系统更新完成</h4>
+                    <p class="text-xs text-green-700 mt-1">系统已于6月1日成功更新至v2.3.0版本</p>
+                  </div>
+                </div>
+              </div>
+              <div class="p-3 bg-yellow-50 rounded-lg border border-yellow-100">
+                <div class="flex">
+                  <div class="flex-shrink-0">
+                    <i class="fa fa-exclamation-triangle text-yellow-600"></i>
+                  </div>
+                  <div class="ml-3">
+                    <h4 class="text-sm font-medium text-yellow-800">服务器容量警告</h4>
+                    <p class="text-xs text-yellow-700 mt-1">当前服务器存储空间已使用85%，请及时清理或扩容</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // 设置当前日期
+    document.addEventListener('DOMContentLoaded', function () {
+      const now = new Date();
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      document.getElementById('current-date').textContent = now.toLocaleDateString('zh-CN', options);
+    });
+
+    // 退出登录
+    document.getElementById('logout-btn').addEventListener('click', function () {
+      if (confirm('确定要退出登录吗？')) {
+        window.location.href = 'login.html';
+      }
+    });
+  </script>
+</body>
+
+</html>

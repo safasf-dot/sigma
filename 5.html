@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智能选课系统 - 课程详情</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#165DFF',
+            secondary: '#36D399',
+            warning: '#FFAB00',
+            danger: '#F87272',
+            dark: '#1E293B',
+            light: '#F8FAFC'
+          },
+          fontFamily: {
+            inter: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .card-shadow {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      }
+      .hover-scale {
+        transition: transform 0.2s ease-in-out;
+      }
+      .hover-scale:hover {
+        transform: scale(1.02);
+      }
+    }
+  </style>
+</head>
+<body class="font-inter bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+  <!-- 顶部导航 -->
+  <header class="bg-primary text-white shadow-md">
+    <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center">
+        <button id="back-btn" class="mr-4 text-white hover:text-gray-200">
+          <i class="fa fa-arrow-left"></i>
+        </button>
+        <h1 class="text-xl font-bold">课程详情</h1>
+      </div>
+      <div class="flex items-center">
+        <span id="user-name" class="mr-4">赵同学</span>
+        <button id="logout-btn" class="flex items-center text-white hover:text-gray-200 transition-colors">
+          <i class="fa fa-sign-out mr-1"></i> 退出
+        </button>
+      </div>
+    </div>
+  </header>
+  
+  <!-- 主内容区 -->
+  <main class="flex-1 p-6 overflow-auto">
+    <div class="container mx-auto">
+      <!-- 课程封面 -->
+      <div class="bg-white rounded-xl shadow-md overflow-hidden mb-8">
+        <div class="h-64 bg-gradient-to-r from-blue-500 to-blue-700 relative">
+          <img src="https://picsum.photos/seed/ds/1200/400" alt="数据结构课程封面" class="w-full h-full object-cover opacity-80">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+            <div class="p-6 md:p-8">
+              <div class="flex flex-col md:flex-row md:items-end">
+                <div class="mb-4 md:mb-0 md:mr-6">
+                  <img src="https://picsum.photos/seed/teacher1/200/200" alt="张教授头像" class="w-20 h-20 rounded-full border-4 border-white shadow-lg">
+                </div>
+                <div class="flex-1">
+                  <h2 class="text-2xl md:text-3xl font-bold text-white">数据结构</h2>
+                  <div class="flex flex-wrap items-center mt-2">
+                    <span class="px-2 py-1 text-xs font-medium bg-white/20 text-white rounded-full mr-2 mb-2">专业必修</span>
+                    <span class="px-2 py-1 text-xs font-medium bg-white/20 text-white rounded-full mr-2 mb-2">计算机学院</span>
+                    <span class="px-2 py-1 text-xs font-medium bg-white/20 text-white rounded-full mb-2">3.0 学分</span>
+                  </div>
+                  <div class="flex items-center mt-3">
+                    <div class="flex items-center text-yellow-300 mr-3">
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star-half-o"></i>
+                      <span class="ml-1 text-white">4.5</span>
+                    </div>
+                    <span class="text-white/80 text-sm">120 人已选</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 课程信息 -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- 左侧内容 -->
+        <div class="lg:col-span-2 space-y-8">
+          <!-- 课程介绍 -->
+          <div class="bg-white rounded-xl shadow-md p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">课程介绍</h3>
+            <p class="text-gray-600 mb-4">
+              本课程全面系统地介绍数据结构的基本概念、原理和方法，包括线性表、栈、队列、树、图等基本数据结构，以及排序和查找等基本算法。通过本课程的学习，学生将掌握数据的组织、存储和处理方法，提高解决复杂问题的能力。
+            </p>
+            <p class="text-gray-600">
+              课程注重理论与实践相结合，通过大量的实例和编程练习，使学生能够熟练使用各种数据结构和算法解决实际问题。课程内容包括：数据结构的基本概念、线性表、栈和队列、树和二叉树、图、排序和查找等。
+            </p>
+          </div>
+          
+          <!-- 课程大纲 -->
+          <div class="bg-white rounded-xl shadow-md p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">课程大纲</h3>
+            
+            <div class="space-y-4">
+              <div class="border border-gray-200 rounded-lg overflow-hidden">
+                <button class="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors">
+                  <div class="flex items-center">
+                    <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                      <span class="text-primary font-medium">1</span>
+                    </div>
+                    <div>
+                      <h4 class="font-medium text-gray-900">第1章：数据结构概述</h4>
+                      <p class="text-sm text-gray-500">2课时</p>
+                    </div>
+                  </div>
+                  <i class="fa fa-chevron-down text-gray-400"></i>
+                </button>
+                <div class="p-4 border-t border-gray-200 bg-white">
+                  <ul class="space-y-2">
+                    <li class="flex items-center">
+                      <i class="fa fa-check-circle text-green-500 mr-2"></i>
+                      <span class="text-gray-700">1.1 数据结构的基本概念</span>
+                    </li>
+                    <li class="flex items-center">
+                      <i class="fa fa-check-circle text-green-500 mr-2"></i>
+                      <span class="text-gray-700">1.2 算法的描述与分析</span>
+                    </li>
+                    <li class="flex items-center">
+                      <i class="fa fa-check-circle text-green-500 mr-2"></i>
+                      <span class="text-gray-700">1.3 算法的时间复杂度和空间复杂度</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="border border-gray-200 rounded-lg overflow-hidden">
+                <button class="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors">
+                  <div class="flex items-center">
+                    <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                      <span class="text-primary font-medium">2</span>
+                    </div>
+                    <div>
+                      <h4 class="font-medium text-gray-900">第2章：线性表</h4>
+                      <p class="text-sm text-gray-500">4课时</p>
+                    </div>
+                  </div>
+                  <i class="fa fa-chevron-down text-gray-400"></i>
+                </button>
+                <div class="p-4 border-t border-gray-200 bg-white">
+                  <ul class="space-y-2">
+                    <li class="flex items-center">
+                      <i class="fa fa-check-circle text-green-500 mr-2"></i>
+                      <span class="text-gray-700">2.1 线性表的定义和基本操作</span>
+                    </li>
+                    <li class="flex items-center">
+                      <i class="fa fa-check-circle text-green-500 mr-2"></i>
+                      <span class="text-gray-700">2.2 线性表的顺序存储结构</span>
+                    </li>
+                    <li class="flex items-center">
+                      <i class="fa fa-check-circle text-green-500 mr-2"></i>
+                      <span class="text-gray-700">2.3 线性表的链式存储结构</span>
+                    </li>
+                    <li class="flex items-center">
+                      <i class="fa fa-check-circle text-green-500 mr-2"></i>
+                      <span class="text-gray-700">2.4 线性表的应用</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="border border-gray-200 rounded-lg overflow-hidden">
+                <button class="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors">
+                  <div class="flex items-center">
+                    <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                      <span class="text-primary font-medium">3</span>
+                    </div>
+                    <div>
+                      <h4 class="font-medium text-gray-900">第3章：栈和队列</h4>
+                      <p class="text-sm text-gray-500">4课时</p>
+                    </div>
+                  </div>
+                  <i class="fa fa-chevron-down text-gray-400"></i>
+                </button>
+                <div class="p-4 border-t border-gray-200 bg-white">
+                  <ul class="space-y-2">
+                    <li class="flex items-center">
+                      <i class="fa fa-check-circle text-green-500 mr-2"></i>
+                      <span class="text-gray-700">3.1 栈的定义和基本操作</span>
+                    </li>
+                    <li class="flex items-center">
+                      <i class="fa fa-check-circle text-green-500 mr-2"></i>
+                      <span class="text-gray-700">3.2 栈的顺序存储和链式存储</span>
+                    </li>
+                    <li class="flex items-center">
+                      <i class="fa fa-check-circle text-green-500 mr-2"></i>
+                      <span class="text-gray-700">3.3 队列的定义和基本操作</span>
+                    </li>
+                    <li class="flex items-center">
+                      <i class="fa fa-check-circle text-green-500 mr-2"></i>
+                      <span class="text-gray-700">3.4 队列的顺序存储和链式存储</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            
+            <button class="mt-4 text-primary hover:text-primary/80 text-sm font-medium">
+              查看全部大纲 <i class="fa fa-chevron-right ml-1"></i>
+            </button>
+          </div>
+          
+          <!-- 授课教师 -->
+          <div class="bg-white rounded-xl shadow-md p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">授课教师</h3>
+            
+            <div class="flex items-start">
+              <img src="https://picsum.photos/seed/teacher1/200/200" alt="张教授头像" class="w-16 h-16 rounded-full mr-4">
+              <div>
+                <h4 class="font-semibold text-gray-900">张教授</h4>
+                <p class="text-sm text-gray-500">计算机学院 | 教授</p>
+                <div class="flex items-center mt-1 text-sm text-gray-600">
+                  <span class="flex items-center mr-4">
+                    <i class="fa fa-graduation-cap mr-1"></i>
+                    <span>博士</span>
+                  </span>
+                  <span class="flex items-center">
+                    <i class="fa fa-book mr-1"></i>
+                    <span>15年教学经验</span>
+                  </span>
+                </div>
+                <p class="mt-3 text-gray-600">
+                  张教授是计算机科学领域的资深专家，主要研究方向为数据结构与算法、人工智能。他拥有丰富的教学经验，曾获学校优秀教学成果一等奖，编写的《数据结构与算法分析》教材被多所高校采用。
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 学生评价 -->
+          <div class="bg-white rounded-xl shadow-md p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-xl font-bold text-gray-800">学生评价</h3>
+              <div class="flex items-center">
+                <span class="text-sm text-gray-500 mr-2">排序：</span>
+                <select class="text-sm border border-gray-300 rounded-lg px-2 py-1 focus:ring-2 focus:ring-primary focus:border-primary">
+                  <option>最新</option>
+                  <option>评分最高</option>
+                  <option>评分最低</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="flex flex-col md:flex-row mb-6">
+              <div class="text-center mb-6 md:mb-0 md:mr-8">
+                <div class="text-4xl font-bold text-gray-900">4.5</div>
+                <div class="flex justify-center mt-1 text-yellow-400">
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star-half-o"></i>
+                </div>
+                <p class="text-sm text-gray-500 mt-1">基于120条评价</p>
+                
+                <div class="mt-4 space-y-2">
+                  <div class="flex items-center">
+                    <span class="text-xs text-gray-500 w-8">5星</span>
+                    <div class="flex-1 mx-2">
+                      <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-yellow-400 h-2 rounded-full" style="width: 60%"></div>
+                      </div>
+                    </div>
+                    <span class="text-xs text-gray-500 w-8 text-right">60%</span>
+                  </div>
+                  <div class="flex items-center">
+                    <span class="text-xs text-gray-500 w-8">4星</span>
+                    <div class="flex-1 mx-2">
+                      <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-yellow-400 h-2 rounded-full" style="width: 30%"></div>
+                      </div>
+                    </div>
+                    <span class="text-xs text-gray-500 w-8 text-right">30%</span>
+                  </div>
+                  <div class="flex items-center">
+                    <span class="text-xs text-gray-500 w-8">3星</span>
+                    <div class="flex-1 mx-2">
+                      <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-yellow-400 h-2 rounded-full" style="width: 10%"></div>
+                      </div>
+                    </div>
+                    <span class="text-xs text-gray-500 w-8 text-right">10%</span>
+                  </div>
+                  <div class="flex items-center">
+                    <span class="text-xs text-gray-500 w-8">2星</span>
+                    <div class="flex-1 mx-2">
+                      <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-yellow-400 h-2 rounded-full" style="width: 0%"></div>
+                      </div>
+                    </div>
+                    <span class="text-xs text-gray-500 w-8 text-right">0%</span>
+                  </div>
+                  <div class="flex items-center">
+                    <span class="text-xs text-gray-500 w-8">1星</span>
+                    <div class="flex-1 mx-2">
+                      <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-yellow-400 h-2 rounded-full" style="width: 0%"></div>
+                      </div>
+                    </div>
+                    <span class="text-xs text-gray-500 w-8 text-right">0%</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="flex-1">
+                <div class="border-b border-gray-200 pb-4 mb-4">
+                  <div class="flex items-center mb-2">
+                    <img src="https://picsum.photos/seed/student1/100/100" alt="学生1头像" class="w-10 h-10 rounded-full mr-3">
+                    <div>
+                      <h4 class="font-medium text-gray-900">李同学</h4>
+                      <div class="flex items-center mt-1 text-yellow-400 text-sm">
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                      </div>
+                    </div>
+                  </div>
+                  <p class="text-gray-700">
+                    张教授的课非常精彩，讲解清晰，逻辑严密。通过这门课，我对数据结构有了更深入的理解，编程能力也得到了很大提高。作业和实验设计合理，对掌握知识点很有帮助。
+                  </p>
+                  <div class="flex items-center mt-3 text-sm text-gray-500">
+                    <span>2025-03-15</span>
+                    <button class="ml-auto flex items-center text-gray-500 hover:text-primary">
+                      <i class="fa fa-thumbs-up mr-1"></i>
+                      <span>有用 (28)</span>
+                    </button>
+                  </div>
+                </div>
+                
+                <div class="border-b border-gray-200 pb-4 mb-4">
+                  <div class="flex items-center mb-2">
+                    <img src="https://picsum.photos/seed/student2/100/100" alt="学生2头像" class="w-10 h-10 rounded-full mr-3">
+                    <div>
+                      <h4 class="font-medium text-gray-900">王同学</h4>
+                      <div class="flex items-center mt-1 text-yellow-400 text-sm">
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star-o"></i>
+                      </div>
+                    </div>
+                  </div>
+                  <p class="text-gray-700">
+                    课程内容充实，老师讲解深入浅出，尤其是对复杂算法的讲解非常清晰。课程难度适中，既有理论讲解，又有实践操作。唯一遗憾的是课程进度有点快，有些内容需要课后自己消化。
+                  </p>
+                  <div class="flex items-center mt-3 text-sm text-gray-500">
+                    <span>2025-03-10</span>
+                    <button class="ml-auto flex items-center text-gray-500 hover:text-primary">
+                      <i class="fa fa-thumbs-up mr-1"></i>
+                      <span>有用 (15)</span>
+                    </button>
+                  </div>
+                </div>
+                
+                <button class="w-full py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                  查看全部120条评价
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 右侧内容 -->
+        <div class="space-y-8">
+          <!-- 课程信息卡片 -->
+          <div class="bg-white rounded-xl shadow-md p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">课程信息</h3>
+            
+            <div class="space-y-4">
+              <div class="flex items-center">
+                <i class="fa fa-calendar text-primary w-6"></i>
+                <span class="text-gray-700">上课时间：周二/周四 08:30-10:00</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fa fa-map-marker text-primary w-6"></i>
+                <span class="text-gray-700">上课地点：信息楼 303</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fa fa-clock-o text-primary w-6"></i>
+                <span class="text-gray-700">学分：3.0</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fa fa-users text-primary w-6"></i>
+                <span class="text-gray-700">已选人数：120/120</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fa fa-calendar-check-o text-primary w-6"></i>
+                <span class="text-gray-700">选课截止日期：2025-03-31</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fa fa-book text-primary w-6"></i>
+                <span class="text-gray-700">教材：《数据结构与算法分析》</span>
+              </div>
+            </div>
+            
+            <div class="mt-6 pt-6 border-t border-gray-200">
+              <button class="w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items

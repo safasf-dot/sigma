@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智能选课系统 - 学生面板</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#165DFF',
+            secondary: '#36D399',
+            warning: '#FFAB00',
+            danger: '#F87272',
+            dark: '#1E293B',
+            light: '#F8FAFC'
+          },
+          fontFamily: {
+            inter: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .card-shadow {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      }
+      .hover-scale {
+        transition: transform 0.2s ease-in-out;
+      }
+      .hover-scale:hover {
+        transform: scale(1.02);
+      }
+    }
+  </style>
+</head>
+
+<body class="font-inter bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+  <!-- 顶部导航 -->
+  <header class="bg-primary text-white shadow-md">
+    <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center">
+        <i class="fa fa-user text-2xl mr-2"></i>
+        <h1 class="text-xl font-bold">学生面板</h1>
+      </div>
+      <div class="flex items-center">
+        <span id="student-name" class="mr-4">学生: 赵同学</span>
+        <button id="student-logout-btn" class="flex items-center text-white hover:text-gray-200 transition-colors">
+          <i class="fa fa-sign-out mr-1"></i> 退出
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主内容区 -->
+  <div class="flex-1 flex">
+    <!-- 侧边栏 -->
+    <aside class="w-64 bg-dark text-white shadow-lg">
+      <nav class="py-4">
+        <div class="px-4 mb-6">
+          <h2 class="text-lg font-semibold text-gray-400 uppercase tracking-wider">课程管理</h2>
+        </div>
+        <ul class="space-y-1">
+          <li>
+            <a href="#"
+              class="nav-link bg-primary/20 text-white flex items-center px-4 py-3 hover:bg-primary/30 transition-colors">
+              <i class="fa fa-tachometer w-6 text-center"></i>
+              <span class="ml-2">我的课程</span>
+            </a>
+          </li>
+          <li>
+            <a href="#"
+              class="nav-link text-gray-300 flex items-center px-4 py-3 hover:bg-primary/20 hover:text-white transition-colors">
+              <i class="fa fa-search w-6 text-center"></i>
+              <span class="ml-2">选课中心</span>
+            </a>
+          </li>
+          <li>
+            <a href="#"
+              class="nav-link text-gray-300 flex items-center px-4 py-3 hover:bg-primary/20 hover:text-white transition-colors">
+              <i class="fa fa-graduation-cap w-6 text-center"></i>
+              <span class="ml-2">成绩查询</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- 主面板 -->
+    <main class="flex-1 p-6 overflow-auto">
+      <div class="container mx-auto">
+        <!-- 欢迎信息 -->
+        <div class="mb-8">
+          <h2 class="text-2xl font-bold text-gray-800 mb-2">欢迎回来，赵同学</h2>
+          <p class="text-gray-600">当前学期你已选修 <span class="text-primary font-semibold">4</span> 门课程</p>
+        </div>
+
+        <!-- 课程表 -->
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+          <h3 class="text-xl font-bold text-gray-800 mb-4">本周课程表</h3>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">时间</th>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">周一</th>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">周二</th>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">周三</th>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">周四</th>
+                  <th scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">周五</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">08:30-10:00</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                      数据结构<br>信息楼 303
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                      计算机网络<br>科技楼 201
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                      数据结构<br>信息楼 303
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                      计算机网络<br>科技楼 201
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                      无课程
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">10:15-11:45</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                      操作系统<br>信息楼 205
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                      高等数学<br>主教学楼 101
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                      操作系统<br>信息楼 205
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                      高等数学<br>主教学楼 101
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                      无课程
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">14:00-15:30</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                      无课程
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                      编程语言<br>实验楼 302
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                      无课程
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                      编程语言<br>实验楼 302
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                      专业英语<br>主教学楼 203
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 已选课程 -->
+        <div class="mb-8">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-bold text-gray-800">我的课程</h3>
+            <a href="#" class="text-primary hover:text-primary/80 text-sm font-medium">查看全部</a>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="bg-white rounded-xl shadow-md overflow-hidden hover-scale">
+              <div class="h-36 bg-gradient-to-r from-blue-500 to-blue-700 relative">
+                <img src="https://picsum.photos/seed/ds/800/400" alt="数据结构课程封面"
+                  class="w-full h-full object-cover opacity-80">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
+                  <div class="p-4">
+                    <h4 class="text-xl font-bold text-white">数据结构</h4>
+                    <p class="text-white/80 text-sm">课程代码: CS201</p>
+                  </div>
+                </div>
+              </div>
+              <div class="p-4">
+                <div class="flex items-center justify-between mb-3">
+                  <div class="flex items-center">
+                    <img src="https://picsum.photos/seed/teacher1/100/100" alt="张教授头像"
+                      class="w-8 h-8 rounded-full mr-2">
+                    <span class="text-sm text-gray-600">张教授</span>
+                  </div>
+                  <span class="text-xs font-medium bg-green-100 text-green-800 px-2 py-1 rounded-full">进行中</span>
+                </div>
+                <div class="flex items-center text-sm text-gray-600 mb-3">
+                  <i class="fa fa-calendar mr-2"></i>
+                  <span>周一/周三 08:30-10:00</span>
+                </div>
+                <div class="flex items-center text-sm text-gray-600 mb-4">
+                  <i class="fa fa-map-marker mr-2"></i>
+                  <span>信息楼 303</span>
+                </div>
+                <div class="flex space-x-2">
+                  <button
+                    class="flex-1 bg-primary hover:bg-primary/90 text-white py-2 px-4 rounded-lg transition-colors text-sm">
+                    查看详情
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-md overflow-hidden hover-scale">
+              <div class="h-36 bg-gradient-to-r from-green-500 to-green-700 relative">
+                <img src="https://picsum.photos/seed/cn/800/400" alt="计算机网络课程封面"
+                  class="w-full h-full object-cover opacity-80">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
+                  <div class="p-4">
+                    <h4 class="text-xl font-bold text-white">计算机网络</h4>
+                    <p class="text-white/80 text-sm">课程代码: CS301</p>
+                  </div>
+                </div>
+              </div>
+              <div class="p-4">
+                <div class="flex items-center justify-between mb-3">
+                  <div class="flex items-center">
+                    <img src="https://picsum.photos/seed/teacher2/100/100" alt="王老师头像"
+                      class="w-8 h-8 rounded-full mr-2">
+                    <span class="text-sm text-gray-600">王老师</span>
+                  </div>
+                  <span class="text-xs font-medium bg-green-100 text-green-800 px-2 py-1 rounded-full">进行中</span>
+                </div>
+                <div class="flex items-center text-sm text-gray-600 mb-3">
+                  <i class="fa fa-calendar mr-2"></i>
+                  <span>周二/周四 08:30-10:00</span>
+                </div>
+                <div class="flex items-center text-sm text-gray-600 mb-4">
+                  <i class="fa fa-map-marker mr-2"></i>
+                  <span>科技楼 201</span>
+                </div>
+                <div class="flex space-x-2">
+                  <button
+                    class="flex-1 bg-primary hover:bg-primary/90 text-white py-2 px-4 rounded-lg transition-colors text-sm">
+                    查看详情
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-md overflow-hidden hover-scale">
+              <div class="h-36 bg-gradient-to-r from-purple-500 to-purple-700 relative">
+                <img src="https://picsum.photos/seed/os/800/400" alt="操作系统课程封面"
+                  class="w-full h-full object-cover opacity-80">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
+                  <div class="p-4">
+                    <h4 class="text-xl font-bold text-white">操作系统</h4>
+                    <p class="text-white/80 text-sm">课程代码: CS302</p>
+                  </div>
+                </div>
+              </div>
+              <div class="p-4">
+                <div class="flex items-center justify-between mb-3">
+                  <div class="flex items-center">
+                    <img src="https://picsum.photos/seed/teacher3/100/100" alt="李教授头像"
+                      class="w-8 h-8 rounded-full mr-2">
+                    <span class="text-sm text-gray-600">李教授</span>
+                  </div>
+                  <span class="text-xs font-medium bg-green-100 text-green-800 px-2 py-1 rounded-full">进行中</span>
+                </div>
+                <div class="flex items-center text-sm text-gray-600 mb-3">
+                  <i class="fa fa-calendar mr-2"></i>
+                  <span>周一/周三 10:15-11:45</span>
+                </div>
+                <div class="flex items-center text-sm text-gray-600 mb-4">
+                  <i class="fa fa-map-marker mr-2"></i>
+                  <span>信息楼 205</span>
+                </div>
+                <div class="flex space-x-2">
+                  <button
+                    class="flex-1 bg-primary hover:bg-primary/90 text-white py-2 px-4 rounded-lg transition-colors text-sm">
+                    查看详情
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 选课中心 -->
+        <div class="mb-8">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-bold text-gray-800">选课中心</h3>
+            <a href="#" class="text-primary hover:text-primary/80 text-sm font-medium">浏览全部课程</a>
+          </div>
+
+          <div class="bg-white rounded-xl shadow-md p-6">
+            <!-- 搜索和筛选 -->
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+              <div class="relative mb-4 md:mb-0">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                  <i class="fa fa-search"></i>
+                </span>
+                <input type="text" placeholder="搜索课程..."
+                  class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary w-full md:w-80">
+              </div>
+
+              <div class="flex flex-wrap gap-3">
+                <select
+                  class="py-2 px-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-white">
+                  <option>全部课程类型</option>
+                  <option>专业必修</option>
+                  <option>专业选修</option>
+                  <option>公共必修</option>
+                  <option>公共选修</option>
+                </select>
+
+                <select
+                  class="py-2 px-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-white">
+                  <option>全部学院</option>
+                  <option>计算机学院</option>
+                  <option>电子工程学院</option>
+                  <option>信息管理学院</option>
+                  <option>数学系</option>
+                </select>
+
+                <select
+                  class="py-2 px-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-white">
+                  <option>全部时间</option>
+                  <option>周一</option>
+                  <option>周二</option>
+                  <option>周三</option>
+                  <option>周四</option>
+                  <option>周五</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- 课程列表 -->
+            <div class="space-y-4">
+              <div class="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors">
+                <div class="flex flex-col md:flex-row">
+                  <div class="flex-shrink-0 mb-4 md:mb-0">
+                    <img src="https://picsum.photos/seed/ai/200/150" alt="人工智能基础课程图片"
+                      class="w-40 h-30 object-cover rounded-lg">
+                  </div>
+                  <div class="flex-1 md:ml-4">
+                    <div class="flex flex-col md:flex-row md:items-start md:justify-between">
+                      <div>
+                        <h4 class="text-lg font-semibold text-gray-900">人工智能基础</h4>
+                        <div class="flex items-center mt-1">
+                          <img src="https://picsum.photos/seed/teacher4/100/100" alt="陈教授头像"
+                            class="w-6 h-6 rounded-full mr-2">
+                          <span class="text-sm text-gray-600">陈教授</span>
+                          <span class="mx-2 text-gray-400">•</span>
+                          <span class="text-sm text-gray-600">计算机学院</span>
+                        </div>
+                      </div>
+                      <div class="mt-2 md:mt-0">
+                        <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">专业选修</span>
+                      </div>
+                    </div>
+
+                    <div class="mt-3 grid grid-cols-2 gap-2 text-sm">
+                      <div class="flex items-center">
+                        <i class="fa fa-calendar text-gray-500 mr-2"></i>
+                        <span class="text-gray-700">周二/周四 10:00-11:30</span>
+                      </div>
+                      <div class="flex items-center">
+                        <i class="fa fa-map-marker text-gray-500 mr-2"></i>
+                        <span class="text-gray-700">科技楼 302</span>
+                      </div>
+                      <div class="flex items-center">
+                        <i class="fa fa-users text-gray-500 mr-2"></i>
+                        <span class="text-gray-700">120/120 人</span>
+                      </div>
+                      <div class="flex items-center">
+                        <i class="fa fa-star text-yellow-400 mr-2"></i>
+                        <span class="text-gray-700">4.9 (120人评价)</span>
+                      </div>
+                    </div>
+
+                    <div class="mt-4 flex items-center justify-between">
+                      <div class="flex items-center">
+                        <span class="text-sm text-gray-500">课程学分: </span>
+                        <span class="ml-1 font-medium">3.0</span>
+                      </div>
+                      <div>
+                        <button
+                          class="bg-primary hover:bg-primary/90 text-white py-2 px-4 rounded-lg transition-colors text-sm">
+                          申请选课
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors">
+                <div class="flex flex-col md:flex-row">
+                  <div class="flex-shrink-0 mb-4 md:mb-0">
+                    <img src="https://picsum.photos/seed/ml/200/150" alt="机器学习课程图片"
+                      class="w-40 h-30 object-cover rounded-lg">
+                  </div>
+                  <div class="flex-1 md:ml-4">
+                    <div class="flex flex-col md:flex-row md:items-start md:justify-between">
+                      <div>
+                        <h4 class="text-lg font-semibold text-gray-900">机器学习</h4>
+                        <div class="flex items-center mt-1">
+                          <img src="https://picsum.photos/seed/teacher5/100/100" alt="刘教授头像"
+                            class="w-6 h-6 rounded-full mr-2">
+                          <span class="text-sm text-gray-600">刘教授</span>
+                          <span class="mx-2 text-gray-400">•</span>
+                          <span class="text-sm text-gray-600">计算机学院</span>
+                        </div>
+                      </div>
+                      <div class="mt-2 md:mt-0">
+                        <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">专业选修</span>
+                      </div>
+                    </div>
+
+                    <div class="mt-3 grid grid-cols-2 gap-2 text-sm">
+                      <div class="flex items-center">
+                        <i class="fa fa-calendar text-gray-500 mr-2"></i>
+                        <span class="text-gray-700">周一/周三 14:00-15:30</span>
+                      </div>
+                      <div class="flex items-center">
+                        <i class="fa fa-map-marker text-gray-500 mr-2"></i>
+                        <span class="text-gray-700">信息楼 205</span>
+                      </div>
+                      <div class="flex items-center">
+                        <i class="fa fa-users text-gray-500 mr-2"></i>
+                        <span class="text-gray-700">85/100 人</span>
+                      </div>
+                      <div class="flex items-center">
+                        <i class="fa fa-star text-yellow-400 mr-2"></i>
+                        <span class="text-gray-700">4.7 (85人评价)</span>
+                      </div>
+                    </div>
+
+                    <div class="mt-4 flex items-center justify-between">
+                      <div class="flex items-center">
+                        <span class="text-sm text-gray-500">课程学分: </span>
+                        <span class="ml-1 font-medium">3.5</span>
+                      </div>
+                      <div>
+                        <button
+                          class="bg-primary hover:bg-primary/90 text-white py-2 px-4 rounded-lg transition-colors text-sm">
+                          申请选课
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // 退出登录
+    document.getElementById('student-logout-btn').addEventListener('click', function () {
+      if (confirm('确定要退出登录吗？')) {
+        window.location.href = 'login.html';
+      }
+    });
+  </script>
+</body>
+
+</html>
